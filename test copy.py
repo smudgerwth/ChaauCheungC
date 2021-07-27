@@ -1,77 +1,44 @@
-from PIL import Image
-import pytesseract
+# import pytesseract
 import cv2
-import numpy as np  
+import numpy as np
+import os
 
-k_r = 2
-k_c = 2
+def median_(src, x):
+	return cv2.medianBlur(src, x)
 
-# get grayscale image
-def get_grayscale(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# def tesseract(src):
+# 	custom_config = r'--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvuwxyz1234567890+?"'
+# 	str = pytesseract.image_to_string(src, config=custom_config)
+# 	print(str)
 
-# noise removal
-def remove_noise(image):
-    return cv2.medianBlur(image,3)
- 
-#thresholding
-def thresholding(image):
-    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-#dilation
-def dilate(image):
-    kernel = np.ones((k_r,k_c),np.uint8)
-    return cv2.dilate(image, kernel, iterations = 1)
-    
-#erosion
-def erode(image):
-    kernel = np.ones((k_r,k_c),np.uint8)
-    return cv2.erode(image, kernel, iterations = 1)
+img = cv2.imread(os.path.join(os.path.dirname(__file__), 'captcha.jpg'))
+cv2.imshow("hi",img)
+#img = median_(img,3)
 
-#opening - erosion followed by dilation
-def opening(image):
-    kernel = np.ones((k_r,k_c),np.uint8)
-    return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+scale_percent = 1500
+width = int(img.shape[1]*scale_percent/100)
+height = int(img.shape[0]*scale_percent/100)
+dim = (width, height)
 
-#opening - dilation followed by erosion
-def closing(image):
-    kernel = np.ones((k_r,k_c),np.uint8)
-    return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+resized = cv2.resize(img, dim,interpolation = cv2.INTER_AREA)
+img2 = cv2.bitwise_not(resized)
 
-#canny edge detection
-def canny(image):
-    return cv2.Canny(image, 100, 200)
-    
-def removeSmallComponents(image, threshold):
-    #find all your connected components (white blobs in your image)
-    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(image, connectivity=4)
-    sizes = stats[1:, -1]; nb_components = nb_components - 1
+kernel = np.ones((16, 16), np.uint8)
+close = cv2.morphologyEx(img2, cv2.MORPH_OPEN, kernel)
+newkernel = np.ones((3 , 3), np.uint8)
+inv = cv2.erode(close, newkernel, iterations=2)
+inv = cv2.bitwise_not(inv)
+img_w = inv.shape[1]
+img_h = inv.shape[0]
+y=int(img_h/10)
+h=int(img_h - img_h/5)
+x=int(img_w/10)
+w=int(img_w - img_w/5)
+crop_img = inv[y:y+h, x:x+w]
+cv2.imshow("inv",crop_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+cv2.imwrite("crop_img5.png", crop_img)
 
-    img2 = np.zeros((output.shape),dtype = np.uint8)
-    #for every component in the image, you keep it only if it's above threshold
-    for i in range(0, nb_components):
-        if sizes[i] >= threshold:
-            img2[output == i + 1] = 255
-    return img2 
-
-img = cv2.imread('captcha1.jpg')
-img = get_grayscale(img)
-# cv2.imshow('get_grayscale', img)
-# kernel = np.ones((2,2),np.uint8)
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(2, 2))
-img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-img2 = removeSmallComponents(img, 1)
-# cv2.imshow('morphologyEx', img)
-
-# img = cv2.GaussianBlur(img,(5,5),0)
-# cv2.imwrite('GaussianBlur.jpg',img)
-cv2.imwrite('result.jpg',img2)
-
-# Wait for 'a' key to stop the program 
-# cv2.waitKey(0)
-  
-# cv2.destroyAllWindows()
-# img2 = cv2.imread('result copy.jpg',0)
-
-text = pytesseract.image_to_string(img, lang='eng')
-print(text)
+# tesseract(crop_img)
