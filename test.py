@@ -6,13 +6,14 @@ import os
 
 k_r = 2
 k_c = 2
+min_pixel = 5
 
 # get grayscale image
 def get_grayscale(image):
-    return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 def get_RGB(image):
-    return cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
 def grayscale_to_binary(image):
     (thresh, im_bw) = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
@@ -51,117 +52,84 @@ def canny(image):
     return cv2.Canny(image, 100, 200)
 
 
-    
-FILE_NAME = "captcha6.jpg"
-img = cv2.imread(os.path.join(os.path.dirname(__file__), FILE_NAME))
+
+FILE_NAME = "captcha30.jpg"
+img = cv2.imread(os.path.join(os.path.dirname(__file__), "captcha\\"+FILE_NAME))
 h, w, ch = img.shape
 b = 3
-# img = img[b:h-b, b:w-b]
+img = img[b:h-b, b:w-b]
 
-img = get_grayscale(img)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 cv2.imwrite('grayscale.jpg',img)
 
-img = grayscale_to_binary(img)
+(thresh, img) = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
 cv2.imwrite('binary.jpg',img)
 
-# cv2.imshow('get_grayscale', img)
-# kernel = np.ones((2,2),np.uint8)
+# kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(2, 2))
+# ori_img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+# cv2.imwrite('close2.jpg',ori_img)
+
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(2, 2))
-ori_img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-cv2.imwrite('close2.jpg',ori_img)
-
-
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(3, 3))
 img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 cv2.imwrite('close3.jpg',img)
 
-
-# kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(3, 3))
-# img = cv2.dilate(img, kernel, iterations = 1)
-# kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(3, 3))
-# img = cv2.erode(img, kernel, iterations = 1)
-# cv2.imshow('morphologyEx', img)
 img = cv2.bitwise_not(img)
 
 
 contours, hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL ,cv2.CHAIN_APPROX_SIMPLE )
 min_x, min_y = w, h
 max_x = max_y = 0
-# img = get_RGB(img)
-l = len(contours)
-print("len:"+str(l))
+
 poly = np.empty((0,2),int)
-# poly1 = np.empty((0,2),int)
-# poly2 = np.empty((0,2),int)
-# poly3 = np.empty((0,2),int)
-# poly4 = np.empty((0,2),int)
+blank_image = np.zeros((h-b-b,w-b-b,1), np.uint8)
+
 # computes the bounding box for the contour, and draws it on the frame,
 for contour in (contours):
     (x,y,w,h) = cv2.boundingRect(contour)
     min_x, max_x = min(x, min_x), max(x+w, max_x)
     min_y, max_y = min(y, min_y), max(y+h, max_y)
     print("x,x,y,y",(min_x),(max_x),(min_y),(max_y))
-    cv2.rectangle(img, (x-1,y-1), (x+w-1,y+h-1), (255, 255, 255), 1)
-    # poly1 = np.append(poly1,[[x,y]],axis=0)
-    # poly2 = np.append(poly2,[[x+w,y+h]],axis=0)
-    # poly3 = np.append(poly3,[[x,y+h]],axis=0)
-    # poly4 = np.append(poly4,[[x+w,y]],axis=0)
-    # poly = np.append(poly,[[[x,y],[x+w,y+h],[x,y+h],[x+w,y]]],axis=0)
-    poly = np.append(poly,[[x-1,y-1],[x+w-1,y+h-1],[x-1,y+h-1],[x+w-1,y-1]],axis=0)
-cv2.imwrite('rectangle.jpg',img)
+    if w > min_pixel and h > min_pixel:
+        cv2.rectangle(blank_image, (x-1,y-1), (x+w-1,y+h-1), (255, 255, 255), 1)
+        poly = np.append(poly,[[x-1,y-1],[x+w-1,y+h-1],[x-1,y+h-1],[x+w-1,y-1]],axis=0)
 
-# poly = poly[poly[:,0].argsort()]
+cv2.imwrite('rectangle.jpg',blank_image)
+
 print((poly))
-# print((poly1))
-# print((poly2))
-# print((poly3))
-# print((poly4))
-# print(np.amin(poly1))
-# print(np.argmax(poly,axis=0))
-# print(np.argmin(poly,axis=0))
-# rotrect = cv2.minAreaRect(poly)
-# print((rotrect))
 # if max_x - min_x > 0 and max_y - min_y > 0:
 #     cv2.rectangle(img, (min_x, min_y), (max_x, max_y), (255, 0, 0), 2)
 
-cv2.fillConvexPoly(img, poly, (255, 255, 255))
-# img = get_grayscale(img)
-# img = grayscale_to_binary(img)
-contours, hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL ,cv2.CHAIN_APPROX_SIMPLE )
-# img = get_RGB(img)
+cv2.fillConvexPoly(blank_image, poly, (255, 255, 255))
 
+contours, hierarchy = cv2.findContours(blank_image,cv2.RETR_EXTERNAL ,cv2.CHAIN_APPROX_SIMPLE )
 print("len:",len(contours)) 
 # print("contour:",(contours[3])) 
 # cv2.drawContours(img,contours,-1,(255,255,255),-1)  
 max_contour = max(contours, key=len)
 rect = cv2.minAreaRect(max_contour)
-box = cv2.boxPoints(rect) # cv2.boxPoints(rect) for OpenCV 3.x
+box = cv2.boxPoints(rect)
 box = np.int0(box)
-cv2.drawContours(img,[box],0,(255,255,255),-1)
-cv2.imwrite('mask.jpg',img)
+cv2.drawContours(blank_image,[box],0,(255,255,255),-1)
+cv2.imwrite('mask.jpg',blank_image)
 
 
-ori_img = cv2.GaussianBlur(ori_img,(3,3),0)
-cv2.imwrite('ori_img.jpg',ori_img)
+img = cv2.GaussianBlur(img,(3,3),0)
+cv2.imwrite('ori_img.jpg',img)
 
+print(blank_image.shape)
 print(img.shape)
-print(ori_img.shape)
-ori_img = cv2.bitwise_not(ori_img)
-result_img = cv2.bitwise_and(ori_img,ori_img,mask = img)
+# ori_img = cv2.bitwise_not(ori_img)
+result_img = cv2.bitwise_and(img,img,mask = blank_image)
 # img = cv2.GaussianBlur(img,(5,5),0)
 # cv2.imwrite('GaussianBlur.jpg',img)
-# cv2.imwrite('result.jpg',img)
 cv2.imwrite('result_img.jpg',result_img)
 
-# Wait for 'a' key to stop the program 
-# cv2.waitKey(0)
-  
-# cv2.destroyAllWindows()
-# img2 = cv2.imread('result copy.jpg',0)
 def tesseract(src):
-	custom_config = r'--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvuwxyz1234567890+?#@&"'
-	str = pytesseract.image_to_string(src, config=custom_config)
-	print(str)
-
+    custom_config = r'--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvuwxyz1234567890+?#@&"'
+    # custom_config = "--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="
+    # char_whitelist = "FfHhLlCcBbAa"
+    # custom_config+=char_whitelist
+    str = pytesseract.image_to_string(src, config=custom_config)
+    print(str)
 text = tesseract(result_img)
 print(text)
