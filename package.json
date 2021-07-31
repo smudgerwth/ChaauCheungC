@@ -1,0 +1,23 @@
+{
+  "name": "chaaucheungc",
+  "version": "1.0.0",
+  "description": "If you can't beat them, join them.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smudgerwth/ChaauCheungC.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smudgerwth/ChaauCheungC/issues"
+  },
+  "homepage": "https://github.com/smudgerwth/ChaauCheungC#readme",
+  "dependencies": {
+    "puppeteer": "^10.1.0",
+    "python-shell": "^3.0.0"
+  }
+}
