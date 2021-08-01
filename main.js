@@ -1,6 +1,9 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const fs = require('fs');
 const {PythonShell} = require('python-shell');
+
+puppeteer.use(StealthPlugin());
 
 (async () => {
     const browser = await puppeteer.launch({
