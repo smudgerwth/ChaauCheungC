@@ -5,7 +5,9 @@ const {PythonShell} = require('python-shell');
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
-        // slowMo: 250, // slow down puppeteer script so that it's easier to follow visually
+        // ignoreDefaultArgs: true, 
+        // args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        slowMo: 1000, // slow down puppeteer script so that it's easier to follow visually
     });
     let [page] = await browser.pages();
     // page.on('console', consoleObj => console.log(consoleObj.text()));
@@ -28,19 +30,21 @@ const {PythonShell} = require('python-shell');
     await newPage.waitForSelector('#inputTextWrapper');
     newPage.on('console', consoleObj => console.log(consoleObj.text()));
     console.log("7");
+    
     let captcha = await newPage.evaluate(() => {
         return document.querySelector('#inputTextWrapper img').src;
     });
     let data = captcha.replace(/^data:image\/\w+;base64,/, "");
+    // console.log("data:"+data)
+
     // Save captcha to file
     let buf = new Buffer.from(data, 'base64');
     fs.writeFile('captcha.jpg', buf,function(err, result) {
         if(err){console.log('error', err);}
     });
-
     // Save the preselected captcha and unselect it
     let presel_char = await newPage.evaluate(() => {
-        let node = document.querySelector('.kbkey.button.red_selected,sel');
+        let node = document.querySelector('.kbkey.button.red_selected.sel');
         node.click();
         return node.innerText;
     });
@@ -48,7 +52,6 @@ const {PythonShell} = require('python-shell');
 
     // Get all the captcha characters
     let char_list = await newPage.evaluate(() => {
-        console.log("Test")
         let list = []
         for(let node of document.querySelectorAll('.kbkey.button.red')){
             list.push(node.innerText);
@@ -62,20 +65,38 @@ const {PythonShell} = require('python-shell');
         mode: 'text',
         pythonOptions: ['-u'], // get print results in real-time
         // scriptPath: 'path/to/my/scripts', //If you are having python_test.py script in same folder, then it's optional.
-        args: [data, presel_char, char_list.join("")] //An argument which can be accessed in the script using sys.argv[1]
+        args: [presel_char, char_list.join("")] //An argument which can be accessed in the script using sys.argv[1]
     };
 
     let ocr_captcha = await new Promise((resolve,reject) =>{ 
-        PythonShell.run('test1.py', options, function (err, result){
+        PythonShell.run('ocr_captcha.py', options, function (err, result){
             if (err) reject(err);
             // result is an array consisting of messages collected 
             //during execution of script.
-            console.log('result: ', result.toString());
-            resolve(result.toString());
+            // console.log('result: ', result.toString());
+            resolve(result[0]);
         });
     });
 
-    console.log('result: ', ocr_captcha);
+    console.log(ocr_captcha);
+
+    await newPage.evaluate((ocr_captcha) => {
+        for(let node of document.querySelectorAll('.kbkey.button.red')){
+            if (ocr_captcha.includes(node.innerText)){
+                node.click();
+            }
+        }
+        // let btn_cont = document.querySelector('.actionBtnContinue');
+        // btn_cont.click();
+    }, ocr_captcha);
+
+    await page.waitForTimeout(2000);
+
+    await newPage.evaluate(() => {
+        let btn_cont = document.querySelector('.actionBtnContinue');
+        btn_cont.click();
+    });
+
     console.log('end');
 
     // await newPage.close();

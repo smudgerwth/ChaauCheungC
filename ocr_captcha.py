@@ -4,13 +4,16 @@ import pytesseract
 import cv2
 import numpy as np  
 import os
+import sys
 
-k_r = 2
-k_c = 2
+MORPH_RECT_SIZE = 2
 CAPTCHA_MIN_PIXEL = 5
 
-FILE_NAME = "captcha30.jpg"
-img = cv2.imread(os.path.join(os.path.dirname(__file__), "captcha\\"+FILE_NAME))
+presel_char = sys.argv[1]
+char_list = sys.argv[2]
+
+FILE_NAME = "captcha.jpg"
+img = cv2.imread(os.path.join(os.path.dirname(__file__), FILE_NAME))
 h, w, ch = img.shape
 b = 3
 img = img[b:h-b, b:w-b]
@@ -25,7 +28,7 @@ cv2.imwrite('binary.jpg',img)
 # ori_img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 # cv2.imwrite('close2.jpg',ori_img)
 
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(2, 2))
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(MORPH_RECT_SIZE, MORPH_RECT_SIZE))
 img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 cv2.imwrite('close3.jpg',img)
 
@@ -44,21 +47,21 @@ for contour in (contours):
     (x,y,w,h) = cv2.boundingRect(contour)
     min_x, max_x = min(x, min_x), max(x+w, max_x)
     min_y, max_y = min(y, min_y), max(y+h, max_y)
-    print("x,x,y,y",(min_x),(max_x),(min_y),(max_y))
+    # print("x,x,y,y",(min_x),(max_x),(min_y),(max_y))
     if w > CAPTCHA_MIN_PIXEL and h > CAPTCHA_MIN_PIXEL:
         cv2.rectangle(blank_image, (x-1,y-1), (x+w-1,y+h-1), (255, 255, 255), 1)
         poly = np.append(poly,[[x-1,y-1],[x+w-1,y+h-1],[x-1,y+h-1],[x+w-1,y-1]],axis=0)
 
 cv2.imwrite('rectangle.jpg',blank_image)
 
-print((poly))
+# print((poly))
 # if max_x - min_x > 0 and max_y - min_y > 0:
 #     cv2.rectangle(img, (min_x, min_y), (max_x, max_y), (255, 0, 0), 2)
 
 cv2.fillConvexPoly(blank_image, poly, (255, 255, 255))
 
 contours, hierarchy = cv2.findContours(blank_image,cv2.RETR_EXTERNAL ,cv2.CHAIN_APPROX_SIMPLE )
-print("len:",len(contours)) 
+# print("len:",len(contours)) 
 # print("contour:",(contours[3])) 
 # cv2.drawContours(img,contours,-1,(255,255,255),-1)  
 max_contour = max(contours, key=len)
@@ -72,20 +75,18 @@ cv2.imwrite('mask.jpg',blank_image)
 img = cv2.GaussianBlur(img,(3,3),0)
 cv2.imwrite('ori_img.jpg',img)
 
-print(blank_image.shape)
-print(img.shape)
+# print(blank_image.shape)
+# print(img.shape)
 # ori_img = cv2.bitwise_not(ori_img)
 result_img = cv2.bitwise_and(img,img,mask = blank_image)
 # img = cv2.GaussianBlur(img,(5,5),0)
 # cv2.imwrite('GaussianBlur.jpg',img)
 cv2.imwrite('result_img.jpg',result_img)
 
-def tesseract(src):
-    custom_config = r'--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvuwxyz1234567890+?#@&"'
-    # custom_config = "--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="
-    # char_whitelist = "FfHhLlCcBbAa"
-    # custom_config+=char_whitelist
-    str = pytesseract.image_to_string(src, config=custom_config)
-    print(str)
-text = tesseract(result_img)
-print(text)
+# custom_config = r'--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvuwxyz1234567890+?#@&"'
+custom_config = "--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="
+# char_whitelist = "FfHhLlCcBbAa"
+custom_config+="\""+char_list+"\""
+# print(custom_config)
+str = pytesseract.image_to_string(result_img, config=custom_config)
+print(str)
