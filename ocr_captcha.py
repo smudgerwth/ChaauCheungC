@@ -6,6 +6,12 @@ import numpy as np
 import os
 import sys
 
+def path(fn):
+    return os.path.join(os.path.dirname(__file__),fn)
+
+def writeimg(fn,img):
+    cv2.imwrite(path(fn), img)
+
 MORPH_RECT_SIZE = 2
 CAPTCHA_MIN_PIXEL = 5
 
@@ -13,24 +19,24 @@ presel_char = sys.argv[1]
 char_list = sys.argv[2]
 
 FILE_NAME = "captcha.jpg"
-img = cv2.imread(os.path.join(os.path.dirname(__file__), FILE_NAME))
+img = cv2.imread(path(FILE_NAME))
 h, w, ch = img.shape
 b = 3
 img = img[b:h-b, b:w-b]
 
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-cv2.imwrite('grayscale.jpg',img)
+writeimg('grayscale.jpg',img)
 
 (thresh, img) = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite('binary.jpg',img)
+writeimg('binary.jpg',img)
 
 # kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(2, 2))
 # ori_img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-# cv2.imwrite('close2.jpg',ori_img)
+# writeimg('close2.jpg',ori_img)
 
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT  ,(MORPH_RECT_SIZE, MORPH_RECT_SIZE))
 img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-cv2.imwrite('close3.jpg',img)
+writeimg('close3.jpg',img)
 
 img = cv2.bitwise_not(img)
 
@@ -52,7 +58,7 @@ for contour in (contours):
         cv2.rectangle(blank_image, (x-1,y-1), (x+w-1,y+h-1), (255, 255, 255), 1)
         poly = np.append(poly,[[x-1,y-1],[x+w-1,y+h-1],[x-1,y+h-1],[x+w-1,y-1]],axis=0)
 
-cv2.imwrite('rectangle.jpg',blank_image)
+writeimg('rectangle.jpg',blank_image)
 
 # print((poly))
 # if max_x - min_x > 0 and max_y - min_y > 0:
@@ -69,19 +75,19 @@ rect = cv2.minAreaRect(max_contour)
 box = cv2.boxPoints(rect)
 box = np.int0(box)
 cv2.drawContours(blank_image,[box],0,(255,255,255),-1)
-cv2.imwrite('mask.jpg',blank_image)
+writeimg('mask.jpg',blank_image)
 
 
 img = cv2.GaussianBlur(img,(3,3),0)
-cv2.imwrite('ori_img.jpg',img)
+writeimg('ori_img.jpg',img)
 
 # print(blank_image.shape)
 # print(img.shape)
 # ori_img = cv2.bitwise_not(ori_img)
 result_img = cv2.bitwise_and(img,img,mask = blank_image)
 # img = cv2.GaussianBlur(img,(5,5),0)
-# cv2.imwrite('GaussianBlur.jpg',img)
-cv2.imwrite('result_img.jpg',result_img)
+# writeimg('GaussianBlur.jpg',img)
+writeimg('result_img.jpg',result_img)
 
 # custom_config = r'--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvuwxyz1234567890+?#@&"'
 custom_config = "--oem 3 --psm 6 -l eng -c tessedit_char_whitelist="

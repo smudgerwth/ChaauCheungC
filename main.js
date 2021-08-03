@@ -8,9 +8,18 @@ puppeteer.use(StealthPlugin());
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
-        // ignoreDefaultArgs: true, 
-        // args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        slowMo: 1000, // slow down puppeteer script so that it's easier to follow visually
+        // ignoreDefaultArgs: [
+        //     "--enable-automation",
+        // ],
+        // ignoreDefaultArgs: true,
+        args: [
+            // '--incognito',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--single-process'
+        ],
+        // slowMo: 250, // slow down puppeteer script so that it's easier to follow visually
     });
     let [page] = await browser.pages();
     // page.on('console', consoleObj => console.log(consoleObj.text()));
@@ -42,7 +51,7 @@ puppeteer.use(StealthPlugin());
 
     // Save captcha to file
     let buf = new Buffer.from(data, 'base64');
-    fs.writeFile('captcha.jpg', buf,function(err, result) {
+    fs.writeFile(__dirname+'\\captcha.jpg', buf,function(err, result) {
         if(err){console.log('error', err);}
     });
     // Save the preselected captcha and unselect it
