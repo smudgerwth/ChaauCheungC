@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const fs = require('fs');
 const {PythonShell} = require('python-shell');
+const path = require('path');
+const root = path.dirname(require.main.filename);
 
 puppeteer.use(StealthPlugin());
 
@@ -9,49 +11,54 @@ puppeteer.use(StealthPlugin());
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
         // ignoreDefaultArgs: [
-        //     "--enable-automation",
+        //     '--enable-automation',
         // ],
         // ignoreDefaultArgs: true,
         args: [
-            // '--incognito',
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--single-process'
+            `--window-size=640,480`,        //     '--incognito',
+        //     '--no-sandbox',
+        //     '--disable-setuid-sandbox',
+        //     '--disable-dev-shm-usage',
+        //     '--single-process'
+            '--incognito',
         ],
-        // slowMo: 250, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 250, // slow down puppeteer script so that it's easier to follow visually
     });
     let [page] = await browser.pages();
     // page.on('console', consoleObj => console.log(consoleObj.text()));
-    console.log("1");
+    console.log('1');
+    console.log(root);
     await page.goto('http://leisurelink.lcsd.gov.hk/?lang=en');
-    console.log("2");
+    console.log('2');
     await page.waitForNavigation({waitUntil: 'networkidle0'});
-    console.log("3");
+    console.log('3');
 
     // Click to enter captcha page
     let btns = await page.$$('.actionBtnBlock');
-    console.log("4");
+    console.log('4');
     let newPagePromise = new Promise(x => page.once('popup', x));
     await btns[0].click();
-    console.log("5");
+    console.log('5');
 
     let newPage = await newPagePromise;
-    console.log("6");
+    console.log('6');
+    let ocr_captcha;
+
+    while(true){
     // Wait for captcha image
     await newPage.waitForSelector('#inputTextWrapper');
     newPage.on('console', consoleObj => console.log(consoleObj.text()));
-    console.log("7");
+    console.log('7');
     
     let captcha = await newPage.evaluate(() => {
         return document.querySelector('#inputTextWrapper img').src;
     });
-    let data = captcha.replace(/^data:image\/\w+;base64,/, "");
-    // console.log("data:"+data)
+    let data = captcha.replace(/^data:image\/\w+;base64,/, '');
+    // console.log('data:'+data)
 
     // Save captcha to file
     let buf = new Buffer.from(data, 'base64');
-    fs.writeFile(__dirname+'\\captcha.jpg', buf,function(err, result) {
+    fs.writeFile(path.join(root,'captcha.jpg'), buf,function(err, result) {
         if(err){console.log('error', err);}
     });
     // Save the preselected captcha and unselect it
@@ -60,7 +67,7 @@ puppeteer.use(StealthPlugin());
         node.click();
         return node.innerText;
     });
-    console.log("presel_char:"+presel_char)
+    console.log('presel_char:'+presel_char)
 
     // Get all the captcha characters
     let char_list = await newPage.evaluate(() => {
@@ -70,17 +77,17 @@ puppeteer.use(StealthPlugin());
         }
         return list;
     });
-    console.log("char_list:"+char_list.join(""))
+    console.log('char_list:'+char_list.join(''))
 
     // Run Python script do OCR
     let options = {
         mode: 'text',
         pythonOptions: ['-u'], // get print results in real-time
         // scriptPath: 'path/to/my/scripts', //If you are having python_test.py script in same folder, then it's optional.
-        args: [presel_char, char_list.join("")] //An argument which can be accessed in the script using sys.argv[1]
+        args: [presel_char, char_list.join('')] //An argument which can be accessed in the script using sys.argv[1]
     };
 
-    let ocr_captcha = await new Promise((resolve,reject) =>{ 
+    ocr_captcha = await new Promise((resolve,reject) =>{ 
         PythonShell.run('ocr_captcha.py', options, function (err, result){
             if (err) reject(err);
             // result is an array consisting of messages collected 
@@ -91,7 +98,20 @@ puppeteer.use(StealthPlugin());
     });
 
     console.log(ocr_captcha);
-
+    if(ocr_captcha.length==4){
+        break;
+    }
+    else
+    {
+        await newPage.waitForSelector('.actionBtnSmall');
+        console.log('regen');
+        let button = await newPage.evaluate(() => {
+            let node = document.querySelector('.actionBtnSmall');
+            node.click();
+        });
+        console.log('btn'+button)
+    }
+    }
     await newPage.evaluate((ocr_captcha) => {
         for(let node of document.querySelectorAll('.kbkey.button.red')){
             if (ocr_captcha.includes(node.innerText)){
@@ -114,6 +134,6 @@ puppeteer.use(StealthPlugin());
     // await newPage.close();
     // await page.close();
     // await browser.close();
-    // console.log("result:"+captcha);
+    // console.log('result:'+captcha);
 
 })();

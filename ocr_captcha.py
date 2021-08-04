@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from PIL import Image
 import pytesseract
 import cv2
 import numpy as np  
@@ -7,13 +6,14 @@ import os
 import sys
 
 def path(fn):
-    return os.path.join(os.path.dirname(__file__),fn)
+    return(os.path.join(os.path.dirname(os.path.abspath(__file__)),fn))
 
 def writeimg(fn,img):
     cv2.imwrite(path(fn), img)
 
 MORPH_RECT_SIZE = 2
-CAPTCHA_MIN_PIXEL = 5
+CAPTCHA_MIN_PIXEL_W = 2
+CAPTCHA_MIN_PIXEL_H = 5
 
 presel_char = sys.argv[1]
 char_list = sys.argv[2]
@@ -54,7 +54,7 @@ for contour in (contours):
     min_x, max_x = min(x, min_x), max(x+w, max_x)
     min_y, max_y = min(y, min_y), max(y+h, max_y)
     # print("x,x,y,y",(min_x),(max_x),(min_y),(max_y))
-    if w > CAPTCHA_MIN_PIXEL and h > CAPTCHA_MIN_PIXEL:
+    if w > CAPTCHA_MIN_PIXEL_W and h > CAPTCHA_MIN_PIXEL_H:
         cv2.rectangle(blank_image, (x-1,y-1), (x+w-1,y+h-1), (255, 255, 255), 1)
         poly = np.append(poly,[[x-1,y-1],[x+w-1,y+h-1],[x-1,y+h-1],[x+w-1,y-1]],axis=0)
 
