@@ -1,0 +1,17 @@
+id=radNonRegId
+
+id=hkId
+id=hkIdCheckDigit
+
+#show HKID
+class=actionBtnSmallAlignTop
+
+#captcha
+id=inputTextWrapper
+class="kbkey button red"
+
+#regenerate captcha
+class="actionBtnSmall"
+
+#go
+class="actionBtnContinue"

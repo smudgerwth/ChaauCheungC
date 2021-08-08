@@ -4,31 +4,118 @@ const fs = require('fs');
 const {PythonShell} = require('python-shell');
 const path = require('path');
 const root = path.dirname(require.main.filename);
+const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
 
+puppeteer.use(ppUserPrefs({
+  userPrefs: {
+    devtools: {
+      preferences: {
+        currentDockState: '"undocked"'
+      },
+    },
+  }
+}));
 puppeteer.use(StealthPlugin());
+
+async function solveCaptcha(c_page){
+    // Wait for captcha image
+    await c_page.waitForSelector('#inputTextWrapper');
+    c_page.on('console', consoleObj => console.log(consoleObj.text()));
+    console.log('7');
+
+    let captcha = await c_page.evaluate(() => {
+        return document.querySelector('#inputTextWrapper img').src;
+    });
+    let data = captcha.replace(/^data:image\/\w+;base64,/, '');
+    // console.log('data:'+data)
+
+    // Save the preselected captcha and unselect it
+    let presel_char = await c_page.evaluate(() => {
+        let node = document.querySelector('.kbkey.button.red_selected.sel');
+        node.click();
+        return node.innerText;
+    });
+    console.log('presel_char:'+presel_char)
+
+    // Get all the captcha characters
+    let char_list = await c_page.evaluate(() => {
+        let list = []
+        for(let node of document.querySelectorAll('.kbkey.button.red')){
+            list.push(node.innerText);
+        }
+        return list;
+    });
+    console.log('char_list:'+char_list.join(''))
+
+    // Run Python script do OCR
+    let options = {
+        mode: 'text',
+        pythonOptions: ['-u'], // get print results in real-time
+        // scriptPath: 'path/to/my/scripts', //If you are having python_test.py script in same folder, then it's optional.
+        args: [data, char_list.join('')] //An argument which can be accessed in the script using sys.argv[1]
+    };
+
+    ocr_captcha = await new Promise((resolve,reject) =>{ 
+        PythonShell.run('ocr_captcha.py', options, function (err, result){
+            if (err) reject(err);
+            // result is an array consisting of messages collected 
+            //during execution of script.
+            // console.log('result: ', result.toString());
+            resolve(result[0]);
+        });
+    });
+    return ocr_captcha;
+}
+
+async function regenerateCaptch(c_page){
+    await c_page.waitForSelector('.actionBtnSmall');
+    console.log('regen');
+    await c_page.evaluate(() => {
+        let node = document.querySelector('.actionBtnSmall');
+        node.click();
+    });
+}
+
+async function selectCaptchaKeys(c_page, ocr_captcha){
+    await c_page.evaluate((ocr_captcha) => {
+        for(let node of document.querySelectorAll('.kbkey.button.red')){
+            if (ocr_captcha.includes(node.innerText)){
+                node.click();
+            }
+        }
+    }, ocr_captcha);
+}
+
+async function pressContinue(c_page){
+    await c_page.evaluate(() => {
+        let btn_cont = document.querySelector('.actionBtnContinue');
+        btn_cont.click();
+    });
+}
 
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
+        devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
         // ],
         // ignoreDefaultArgs: true,
         args: [
-            `--window-size=640,480`,        //     '--incognito',
-        //     '--no-sandbox',
-        //     '--disable-setuid-sandbox',
-        //     '--disable-dev-shm-usage',
-        //     '--single-process'
+            // '--window-size=640,480',        //     '--incognito',
+            // '--no-sandbox',
+            // '--disable-setuid-sandbox',
+            // '--disable-dev-shm-usage',
+            // '--single-process',
             '--incognito',
         ],
         slowMo: 250, // slow down puppeteer script so that it's easier to follow visually
     });
+
     let [page] = await browser.pages();
     // page.on('console', consoleObj => console.log(consoleObj.text()));
     console.log('1');
-    console.log(root);
-    await page.goto('http://leisurelink.lcsd.gov.hk/?lang=en');
+    await page.goto('http://leisurelink.lcsd.gov.hk/?lang=tc');
     console.log('2');
     await page.waitForNavigation({waitUntil: 'networkidle0'});
     console.log('3');
@@ -45,88 +132,37 @@ puppeteer.use(StealthPlugin());
     let ocr_captcha;
 
     while(true){
-    // Wait for captcha image
-    await newPage.waitForSelector('#inputTextWrapper');
-    newPage.on('console', consoleObj => console.log(consoleObj.text()));
-    console.log('7');
+        ocr_captcha = await solveCaptcha(newPage);
+        console.log("ocr_captcha:"+ocr_captcha);
+        if(ocr_captcha.length==4){
+            await selectCaptchaKeys(newPage,ocr_captcha);
+            break;
+        }
+        else
+        {
+            await regenerateCaptch(newPage);
+        }
+    }
     
-    let captcha = await newPage.evaluate(() => {
-        return document.querySelector('#inputTextWrapper img').src;
-    });
-    let data = captcha.replace(/^data:image\/\w+;base64,/, '');
-    // console.log('data:'+data)
+    await pressContinue(newPage);
+    console.log('hihi');
+    await newPage.waitForTimeout(5000)
+    console.log('hihi2');
+    // await newPage.waitForSelector('.kbkey.button.red');
+    // console.log('hihi3');
 
-    // Save captcha to file
-    let buf = new Buffer.from(data, 'base64');
-    fs.writeFile(path.join(root,'captcha.jpg'), buf,function(err, result) {
-        if(err){console.log('error', err);}
-    });
-    // Save the preselected captcha and unselect it
-    let presel_char = await newPage.evaluate(() => {
-        let node = document.querySelector('.kbkey.button.red_selected.sel');
-        node.click();
-        return node.innerText;
-    });
-    console.log('presel_char:'+presel_char)
-
-    // Get all the captcha characters
-    let char_list = await newPage.evaluate(() => {
-        let list = []
-        for(let node of document.querySelectorAll('.kbkey.button.red')){
-            list.push(node.innerText);
-        }
-        return list;
-    });
-    console.log('char_list:'+char_list.join(''))
-
-    // Run Python script do OCR
-    let options = {
-        mode: 'text',
-        pythonOptions: ['-u'], // get print results in real-time
-        // scriptPath: 'path/to/my/scripts', //If you are having python_test.py script in same folder, then it's optional.
-        args: [presel_char, char_list.join('')] //An argument which can be accessed in the script using sys.argv[1]
-    };
-
-    ocr_captcha = await new Promise((resolve,reject) =>{ 
-        PythonShell.run('ocr_captcha.py', options, function (err, result){
-            if (err) reject(err);
-            // result is an array consisting of messages collected 
-            //during execution of script.
-            // console.log('result: ', result.toString());
-            resolve(result[0]);
-        });
-    });
-
-    console.log(ocr_captcha);
-    if(ocr_captcha.length==4){
-        break;
-    }
-    else
-    {
-        await newPage.waitForSelector('.actionBtnSmall');
-        console.log('regen');
-        let button = await newPage.evaluate(() => {
-            let node = document.querySelector('.actionBtnSmall');
-            node.click();
-        });
-        console.log('btn'+button)
-    }
-    }
-    await newPage.evaluate((ocr_captcha) => {
-        for(let node of document.querySelectorAll('.kbkey.button.red')){
-            if (ocr_captcha.includes(node.innerText)){
-                node.click();
-            }
-        }
-        // let btn_cont = document.querySelector('.actionBtnContinue');
-        // btn_cont.click();
-    }, ocr_captcha);
-
-    await page.waitForTimeout(2000);
+    // await newPage.evaluate(() => {
+    //     for(let node of document.querySelectorAll('.kbkey.button.red')){
+    //         node.click();
+    //     }
+    // });
+    // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
+    await newPage.waitForSelector('#radNonRegId');
+    console.log('hihi4');
 
     await newPage.evaluate(() => {
-        let btn_cont = document.querySelector('.actionBtnContinue');
-        btn_cont.click();
+        let node = document.querySelector('#radNonRegId');
+        node.click();
     });
 
     console.log('end');
