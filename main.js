@@ -5,6 +5,7 @@ const {PythonShell} = require('python-shell');
 const path = require('path');
 const root = path.dirname(require.main.filename);
 const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
+const { SSL_OP_TLS_ROLLBACK_BUG } = require('constants');
 
 puppeteer.use(ppUserPrefs({
   userPrefs: {
@@ -20,7 +21,7 @@ puppeteer.use(StealthPlugin());
 async function solveCaptcha(c_page){
     // Wait for captcha image
     await c_page.waitForSelector('#inputTextWrapper');
-    c_page.on('console', consoleObj => console.log(consoleObj.text()));
+    // c_page.on('console', consoleObj => console.log(consoleObj.text()));
     console.log('7');
 
     let captcha = await c_page.evaluate(() => {
@@ -32,8 +33,10 @@ async function solveCaptcha(c_page){
     // Save the preselected captcha and unselect it
     let presel_char = await c_page.evaluate(() => {
         let node = document.querySelector('.kbkey.button.red_selected.sel');
-        node.click();
-        return node.innerText;
+        if(node!=null){
+            node.click();
+            return node.innerText;
+        }
     });
     console.log('presel_char:'+presel_char)
 
@@ -77,10 +80,14 @@ async function regenerateCaptch(c_page){
 }
 
 async function selectCaptchaKeys(c_page, ocr_captcha){
-    await c_page.evaluate((ocr_captcha) => {
-        for(let node of document.querySelectorAll('.kbkey.button.red')){
-            if (ocr_captcha.includes(node.innerText)){
-                node.click();
+    await c_page.evaluate(async(ocr_captcha) => {
+        for(let i=0; i<ocr_captcha.length; i++){
+            for(let node of document.querySelectorAll('.kbkey.button.red')){
+                if (ocr_captcha.charAt(i)===(node.innerText)){
+                    node.click();
+                    // await new Promise(resolve => setTimeout(resolve, 500))
+                    break;
+                }
             }
         }
     }, ocr_captcha);
@@ -102,7 +109,8 @@ async function pressContinue(c_page){
         // ],
         // ignoreDefaultArgs: true,
         args: [
-            '--window-size=640,480',        //     '--incognito',
+            // '--window-size=640,480',
+            // '--start-maximized',
             // '--no-sandbox',
             // '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
@@ -166,8 +174,22 @@ async function pressContinue(c_page){
     await frame.focus('#telephoneNo');
     await newPage.keyboard.type(config_data.telephoneNo);
 
-
-    /
+    while(true){
+        ocr_captcha = await solveCaptcha(frame);
+        console.log("ocr_captcha:"+ocr_captcha);
+        if(ocr_captcha.length==5 
+            && ocr_captcha.split("").some(function(v,i,a){
+            return a.lastIndexOf(v)!=i;
+          })==false){
+            await selectCaptchaKeys(frame,ocr_captcha);
+            await pressContinue(frame);
+            break;
+        }
+        else
+        {
+            await regenerateCaptch(frame);
+        }
+    }
     console.log('end');
 
     // await newPage.close();
