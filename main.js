@@ -96,13 +96,13 @@ async function pressContinue(c_page){
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
-        devtools: true,
+        // devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
         // ],
         // ignoreDefaultArgs: true,
         args: [
-            // '--window-size=640,480',        //     '--incognito',
+            '--window-size=640,480',        //     '--incognito',
             // '--no-sandbox',
             // '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
@@ -130,13 +130,20 @@ async function pressContinue(c_page){
     let newPage = await newPagePromise;
     console.log('6');
     let ocr_captcha;
+    let elementHandle;
 
     while(true){
         ocr_captcha = await solveCaptcha(newPage);
         console.log("ocr_captcha:"+ocr_captcha);
-        if(ocr_captcha.length==4){
+        if(ocr_captcha.length==4 
+            && ocr_captcha.split("").some(function(v,i,a){
+            return a.lastIndexOf(v)!=i;
+          })==false){
             await selectCaptchaKeys(newPage,ocr_captcha);
-            break;
+            await pressContinue(newPage);
+            elementHandle = await newPage.waitForSelector("frame[name='main']",{timeout:5000});
+            if(elementHandle != null)
+                break;
         }
         else
         {
@@ -144,27 +151,23 @@ async function pressContinue(c_page){
         }
     }
     
-    await pressContinue(newPage);
     console.log('hihi');
-    await newPage.waitForTimeout(5000)
-    console.log('hihi2');
-    // await newPage.waitForSelector('.kbkey.button.red');
-    // console.log('hihi3');
 
-    // await newPage.evaluate(() => {
-    //     for(let node of document.querySelectorAll('.kbkey.button.red')){
-    //         node.click();
-    //     }
-    // });
-    // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
-    await newPage.waitForSelector('#radNonRegId');
-    console.log('hihi4');
+    let config_data = JSON.parse(fs.readFileSync(path.join(root,'config.json')));
+    const frame = await elementHandle.contentFrame();
+    console.log(frame)
+    await frame.waitForSelector('#radNonRegId');
+    await frame.click('#radNonRegId');
+    await frame.focus('#hkId');
+    console.log('hkId:'+config_data.hkId);
+    await newPage.keyboard.type(config_data.hkId);
+    await frame.focus('#hkIdCheckDigit');
+    await newPage.keyboard.type(config_data.hkIdCheckDigit);
+    await frame.focus('#telephoneNo');
+    await newPage.keyboard.type(config_data.telephoneNo);
 
-    await newPage.evaluate(() => {
-        let node = document.querySelector('#radNonRegId');
-        node.click();
-    });
 
+    /
     console.log('end');
 
     // await newPage.close();
