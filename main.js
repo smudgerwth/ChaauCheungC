@@ -5,7 +5,6 @@ const {PythonShell} = require('python-shell');
 const path = require('path');
 const root = path.dirname(require.main.filename);
 const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
-const { SSL_OP_TLS_ROLLBACK_BUG } = require('constants');
 
 puppeteer.use(ppUserPrefs({
   userPrefs: {
@@ -71,6 +70,7 @@ async function solveCaptcha(c_page){
 }
 
 async function regenerateCaptch(c_page){
+    await new Promise(resolve => setTimeout(resolve, 1000))
     await c_page.waitForSelector('.actionBtnSmall');
     console.log('regen');
     await c_page.evaluate(() => {
@@ -85,7 +85,7 @@ async function selectCaptchaKeys(c_page, ocr_captcha){
             for(let node of document.querySelectorAll('.kbkey.button.red')){
                 if (ocr_captcha.charAt(i)===(node.innerText)){
                     node.click();
-                    // await new Promise(resolve => setTimeout(resolve, 500))
+                    await new Promise(resolve => setTimeout(resolve, 1000))
                     break;
                 }
             }
@@ -103,13 +103,13 @@ async function pressContinue(c_page){
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
-        // devtools: true,
+        devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
         // ],
         // ignoreDefaultArgs: true,
         args: [
-            // '--window-size=640,480',
+            '--window-size=640,480',
             // '--start-maximized',
             // '--no-sandbox',
             // '--disable-setuid-sandbox',
@@ -117,7 +117,7 @@ async function pressContinue(c_page){
             // '--single-process',
             '--incognito',
         ],
-        slowMo: 250, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 300, // slow down puppeteer script so that it's easier to follow visually
     });
 
     let [page] = await browser.pages();
@@ -125,7 +125,7 @@ async function pressContinue(c_page){
     console.log('1');
     await page.goto('http://leisurelink.lcsd.gov.hk/?lang=tc');
     console.log('2');
-    await page.waitForNavigation({waitUntil: 'networkidle0'});
+    // await page.waitForNavigation({waitUntil: 'networkidle0'});
     console.log('3');
 
     // Click to enter captcha page
@@ -149,7 +149,7 @@ async function pressContinue(c_page){
           })==false){
             await selectCaptchaKeys(newPage,ocr_captcha);
             await pressContinue(newPage);
-            elementHandle = await newPage.waitForSelector("frame[name='main']",{timeout:5000});
+            elementHandle = await newPage.waitForSelector("frame[name='main']",{timeout:5000}).catch(error => console.log('failed to wait for the selector'));
             if(elementHandle != null)
                 break;
         }
@@ -162,7 +162,7 @@ async function pressContinue(c_page){
     console.log('hihi');
 
     let config_data = JSON.parse(fs.readFileSync(path.join(root,'config.json')));
-    const frame = await elementHandle.contentFrame();
+    let frame = await elementHandle.contentFrame();
     console.log(frame)
     await frame.waitForSelector('#radNonRegId');
     await frame.click('#radNonRegId');
@@ -183,13 +183,40 @@ async function pressContinue(c_page){
           })==false){
             await selectCaptchaKeys(frame,ocr_captcha);
             await pressContinue(frame);
-            break;
+            console.log("wait data");
+            elementHandle = await frame.waitForSelector("#datePanel",{timeout:5000}).catch(error => console.log('failed to wait for the selector'));
+            if(elementHandle != null)
+                break;
         }
         else
         {
             await regenerateCaptch(frame);
         }
     }
+    let dat_val = await frame.evaluate(() => {
+        const example = document.querySelector('#datePanel');
+        const example_options = example.querySelectorAll('option');
+        let val;
+        for(let node of example_options){
+            
+            val =  node.value
+        }
+        return val;
+    });
+    console.log("val:",dat_val);
+    // await frame.evaluate(() => {
+    //     Array.from(document.querySelector("#datePanel").options).forEach(function(option_element) {
+    //         let option_text = option_element.text;
+    //         let option_value = option_element.value;
+    //         let is_option_selected = option_element.selected;
+        
+    //         // console.log('Option Text : ' + option_text);
+    //         // console.log('Option Value : ' + option_value);
+    //         // console.log('Option Selected : ' + (is_option_selected === true ? 'Yes' : 'No'));
+        
+    //         // console.log("\n\r");
+    //     });
+    // });
     console.log('end');
 
     // await newPage.close();

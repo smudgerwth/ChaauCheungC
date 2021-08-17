@@ -1,0 +1,2012 @@
+<html>
+
+<head>
+    <meta http-equiv="PRAGMA" content="NO-CACHE">
+    <meta http-equiv="EXPIRES" content="0">
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+    <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NONE">
+    <meta name="GOOGLEBOT" content="NOARCHIVE">
+    <!-- <META NAME="X-UA-Compatible" CONTENT="IE=EmulateIE8">-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=1">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" type="text/css" href="/lcsd/leisurelink/css/typographyTC.css?d=2021m8d18s315">
+    <link rel="stylesheet" type="text/css" href="/lcsd/leisurelink/css/onlineService.css?d=2021m8d18s315">
+    <link rel="stylesheet" type="text/css" href="/lcsd/leisurelink/css/lcsd.css?d=2021m8d18s315">
+    <link rel="stylesheet" type="text/css" href="/lcsd/leisurelink/css/lcsdTC.css?d=2021m8d18s315">
+    <link rel="stylesheet" type="text/css" href="/lcsd/leisurelink/css/daterangepicker.min.css?d=2021m8d18s315">
+
+
+    <link rel="stylesheet" type="text/css" media="print" href="/lcsd/leisurelink/css/print.css?d=2021m8d18s315">
+
+    <meta name="gwt:module" content="gwt-files=hk.gov.lcsd.leisurelink.OnlineBookingApp">
+    <base href="https://t2.leisurelink.lcsd.gov.hk/lcsd/leisurelink/facilityBooking/select/select.jsp">
+    <script type="text/javascript" src="/lcsd/leisurelink/jquery/jquery-1.12.4.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="/lcsd/leisurelink/js/keyTrap.js"></script>
+    <script language="JavaScript" type="text/javascript" src="/lcsd/leisurelink/js/hammer.min.js"></script>
+    <script type="text/javascript" src="/lcsd/leisurelink/js/moment.min.js"></script>
+    <script type="text/javascript" src="/lcsd/leisurelink/js/jquery.daterangepicker.min.js"></script>
+    <script type="text/javascript">
+        var isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
+        if (isEdge) {
+            window.history.forward(1);
+        }
+        function noBack() {
+            if (isEdge) {
+                window.history.forward(1);
+            }
+        }
+    </script>
+    <script language="JavaScript">
+        var contextPath = {
+
+            contextPathURL: "https://t2.leisurelink.lcsd.gov.hk:443/lcsd/leisurelink"
+        };
+
+        function openwindow(page) {
+            myWin = open(page, "popupWindow",
+                "width=800,height=600,copyhistory=no,scrollbars=yes,resizable=yes,screenX=0,screenY=0,left=0,top=0,hotkeys=no,status=yes");
+        }
+
+        //var defaultFocus = true;
+        var defaultFocus = false;
+        function setDefaultFocus() {
+            var inputObjs = document.body.getElementsByTagName("INPUT");
+            for (var i = 0; i < inputObjs.length; i++) {
+                if (inputObjs[i].type == "text" && !inputObjs[i].disabled && inputObjs[i].style.visibility != "hidden" && !inputObjs[i].readOnly) {
+                    //alert(inputObjs[i].name + ", disable=" + inputObjs[i].disabled + ", visable=" + inputObjs[i].style.display);
+                    if (inputObjs[i].className != null && inputObjs[i].className != undefined
+                        && inputObjs[i].className.indexOf("resInputText") >= 0) {
+                        scroll2Top();
+                        break;
+                    }
+                    inputObjs[i].focus();
+                    break;
+                }
+            }
+        }
+
+< !--
+            function pageOnload() {
+                //checkParentBrowser();
+                noBack();
+                resize();
+            }
+
+        function checkParentBrowser() {
+
+            // isCK
+
+
+        }
+        //-->
+
+        function displayScrollIcon() {
+            /*Enquiry Table*/
+            $('.formSubTitleWithScrollIcon').css('padding-bottom', '30px');
+            $('.ballotTitleWithScrollIcon').css('padding-bottom', '30px');
+
+            if ($('.resultTable') != null && $('.resultTable').get(0) != undefined &&
+                $('#resultPanel') != null && $('#resultPanel').get(0) != undefined) {
+                if ($('.resultTable').width() != undefined && $('#resultPanel').width() != undefined) {
+                    if ($('.resultTable').width() <= $('#resultPanel').width()) {
+                        $('#scrollIconRight').css('display', 'none');
+                        $('.formSubTitleWithScrollIcon').css('padding-bottom', '10px');
+                    } else {
+                        if ($('#scrollIconLeft') != null && $('#scrollIconLeft').get(0) != undefined) {
+                            if ($('#scrollIconLeft').get(0).style.display == "none") {
+                                $('#scrollIconRight').css('display', 'block');
+                                $('.formSubTitleWithScrollIcon').css('padding-bottom', '30px');
+
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+
+            /*Timeslot Table*/
+            if ($('.timeSlotTable').width() != undefined) {
+                if ($('.timeSlotTable').width() <= $('#searchResultTable').width()) {
+                    $('#scrollIconRight').css('display', 'none');
+                    $('.formSubTitleWithScrollIcon').css('padding-bottom', '10px');
+                } else {
+                    if ($('#scrollIconLeft') != null && $('#scrollIconLeft').get(0) != undefined) {
+                        if ($('#scrollIconLeft').get(0).style.display == "none") {
+                            $('#scrollIconRight').css('display', 'block');
+                            $('.formSubTitleWithScrollIcon').css('padding-bottom', '30px');
+                        }
+                    }
+                }
+            }
+
+            if ($('.resultTable') != null && $('.resultTable').get(0) != undefined &&
+                $('#ballotResultPanel') != null && $('#ballotResultPanel').get(0) != undefined) {
+                if ($('.resultTable').width() != undefined && $('#ballotResultPanel').width() != undefined) {
+                    if ($('.resultTable').width() <= $('#ballotResultPanel').width()) {
+                        $('#scrollIconRight2').css('display', 'none');
+                        $('.ballotTitleWithScrollIcon').css('padding-bottom', '10px');
+                    } else {
+                        if ($('#scrollIconLeft2') != null && $('#scrollIconLeft2').get(0) != undefined) {
+                            if ($('#scrollIconLeft2').get(0).style.display == "none") {
+                                $('#scrollIconRight2').css('display', 'block');
+                                $('.ballotTitleWithScrollIcon').css('padding-bottom', '30px');
+                            }
+                        }
+                    }
+                }
+
+
+            }
+
+
+
+            $('.formSubTitleWithScrollIcon2').css('padding-bottom', '30px');
+
+            if ($('#dateWithCalenderBlock') != null && $('#dateWithCalenderBlock').get(0) != undefined) {
+                if ($('#dateWithCalenderBlock')[0].scrollWidth > $('#dateWithCalenderBlock')[0].offsetWidth) {
+                    if ($('#scrollIconLeft2') != null && $('#scrollIconLeft2').get(0) != undefined) {
+                        if ($('#scrollIconLeft2').get(0).style.display == "none") {
+                            $('#scrollIconRight2').css('display', 'block');
+                            $('.formSubTitleWithScrollIcon2').css('padding-bottom', '30px');
+                        }
+                    }
+                    $('#dateWithCalenderBlock').css('min-height', '130px');
+                } else {
+                    $('#scrollIconRight2').css('display', 'none');
+                    $('.formSubTitleWithScrollIcon2').css('padding-bottom', '10px');
+                    $('#dateWithCalenderBlock').css('min-height', '');
+                }
+            }
+
+            $('.formSubTitleWithScrollIcon3').css('padding-bottom', '30px');
+
+            if ($('#penaltyTable') != null && $('#penaltyTable').get(0) != undefined) {
+                if ($('#penaltyTable')[0].scrollWidth > $('#penaltyTable')[0].offsetWidth) {
+                    if ($('#scrollIconLeft3') != null && $('#scrollIconLeft3').get(0) != undefined) {
+                        if ($('#scrollIconLeft3').get(0).style.display == "none") {
+                            $('#scrollIconRight3').css('display', 'block');
+                            $('.formSubTitleWithScrollIcon3').css('padding-bottom', '30px');
+                        }
+                    }
+
+                } else {
+                    $('#scrollIconRight3').css('display', 'none');
+                    $('.formSubTitleWithScrollIcon3').css('padding-bottom', '10px');
+
+                }
+            }
+
+
+
+        }
+
+        function setScrollIconPosition() {
+
+            displayScrollIcon();
+            /*	setSearchResultTableWidth();*/
+
+            /* var nav = $('#resultPanel');
+            if (nav.length) {
+              var panelTop = $('#resultPanel').position().top;
+              var panelLeft = $('#resultPanel').position().left;
+              
+              $('#scrollIconRight, #scrollIconLeft').css('top',panelTop + nav.height()/2);
+              $('#scrollIconLeft, #scrollIconLeft2').css('left',panelLeft + nav.width()-25);
+            }
+        	
+            var nav2 = $('#ballotResultPanel');
+            if (nav2.length) {
+                  var panelTop2 = $('#ballotResultPanel').position().top;
+                  $('#scrollIconRight2, #scrollIconLeft2').css('top',panelTop2 + nav2.height()/2);
+            }
+        	
+            var nav3 = $('#searchResultTable');
+            if (nav3.length) {
+                  var panelTop3 = $('#searchResultTable').position().top;
+                  var panelLeft3 = $('#searchResultTable').position().left;
+                  
+                  $('#scrollIconRight, #scrollIconLeft').css('top',panelTop3 + nav3.height()/4);
+                  $('#scrollIconLeft').css('left',panelLeft3 + nav3.width()-25);
+            } */
+        }
+
+        function setSearchResultTableWidth() {
+            //need to enhance it to cater all table
+
+            //checked ok with width size 320 in normal booking 
+            if ($('#searchResult').width() != undefined) {
+                $('.TablePanel').css('width', $('#searchResult').width() - 10);
+            } else if ($('.scrollHeading').width() != undefined) {
+                $('.TablePanel').css('width', $('.scrollHeading').width() - 15);
+            }
+
+            if ($('.scrollHeading3').width() != undefined) {
+                $('.penaltyTablePanel').css('width', $('.scrollHeading3').width() - 15);
+            }
+
+
+        }
+
+        function resize() {
+
+            //initialize
+            $('.empty').css('height', '405px');
+            $('.TablePanel').css('width', '290px');
+            $('.penaltyTablePanel').css('width', '290px');
+            if (screen.width < 673 || $(window).width() < 673) {
+                if (!($('#leftMenuPanel').get(0).style.display == 'none' || $('#leftMenuPanel').get(0).style.display == '')) {
+                    $('#formPanelResponsive').get(0).className = 'formPanelMasked';
+                } else {
+                    $('#formPanelResponsive').get(0).className = "formPanel";
+                }
+            }
+
+            setSearchResultTableWidth();
+
+            if ($('#formPanelResponsive').height() > $('#leftMenuPanel').height()) {
+                if ($('#formPanelResponsive').height() - $('#leftMenuPanel').height() > 405) {
+                    $('.empty').css('height', '10px');
+                }
+            } else {
+                $('.empty').css('height', '460px');
+            }
+
+            if ($('#contentPanel').height() < $('#leftMenuPanel').height()) {
+                $('#contentPanel').css('height', $('#leftMenuPanel').height() + 10);
+            }
+
+            setScrollIconPosition();
+
+            resizeBottom();
+        }
+
+        function resizeBottom() {
+            if ($('#formPanelResponsive').height() > $('#contentPanel').height()) {
+                $('#contentPanel').height($('#formPanelResponsive').height() + 10);
+            }
+        }
+
+        function go2InvalidBallot() {
+
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (iOS) {
+                $('#body_shell').get(0).className = "scrollHolder";
+            }
+            if ($('#invalidBallotPanelDiv') != null && $('#invalidBallotPanelDiv').get(0) != undefined) {
+                document.getElementById("invalidBallotPanelDiv").scrollIntoView(false);
+            }
+
+            resetBodyShell();
+
+        }
+
+        function go2Error() {
+
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (iOS) {
+                $('#body_shell').get(0).className = "scrollHolder";
+            }
+            if ($('#errorPanel') != null && $('#errorPanel').get(0) != undefined) {
+                document.getElementById("errorPanel").scrollIntoView(false);
+            } else if ($('#errorPanelPanel') != null && $('#errorPanelPanel').get(0) != undefined) {
+                document.getElementById("errorPanelPanel").scrollIntoView(false);
+            }
+
+            resetBodyShell();
+
+        }
+
+        function scroll2Top() {
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (iOS) {
+                $('#body_shell').get(0).className = "scrollHolder";
+            }
+            document.getElementById("header").scrollIntoView(false);
+
+            resetBodyShell();
+        }
+
+
+        function go2SearchResult() {
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (iOS) {
+                $('#body_shell').get(0).className = "scrollHolder";
+            }
+            document.getElementById("scroll2Result").scrollIntoView(true);
+
+            resetBodyShell();
+
+        }
+
+        function getDobDDVal() {
+
+            return $('#dobDD').val();
+
+        }
+
+        function getDobMMVal() {
+
+            return $('#dobMM').val();
+
+        }
+
+        function getDobYYYYVal() {
+
+            return $('#dobYYYY').val();
+
+        }
+
+        function clearAgeRestInput() {
+            $('#dobDD').val('');
+            $('#dobMM').val('');
+            $('#dobYYYY').val('');
+
+        }
+
+
+    </script>
+    <script>
+        function resetBodyShell() {
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (iOS) {
+                $('#body_shell').get(0).className = "noScrollHolder";
+            }
+        }
+    </script>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body oncontextmenu="return false" onunload="return false" ondragstart="return false" onselectstart="return false"
+    onload="pageOnload()" onpageshow="if (event.persisted) noBack();">
+    <!-- <a name="errorMessageAnchor"></a> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a name="top"></a>
+    <!-- Include the bootstrap script just inside the body or in the head    -->
+    <!-- (startup is slightly faster if you place it just after the body tag -->
+
+
+    <script language="javascript"
+        src="/lcsd/leisurelink/gwt-files/facilityBooking/hk.gov.lcsd.leisurelink.OnlineBookingApp.nocache.js?a=0.6757723353276344"></script>
+    <script
+        defer="defer">hk_gov_lcsd_leisurelink_OnlineBookingApp.onInjectionDone('hk.gov.lcsd.leisurelink.OnlineBookingApp')</script>
+    <!-- <iframe src="javascript:''" id='__gwt_historyFrame' style='width:0;height:0;border:0'></iframe> -->
+    <div id="body_shell">
+        <div id="pagePanel">
+            <div id="mainpage_padding">
+                <!-- top header panel includes eGov picture and close window image button -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!--
+	<div id="headerLeftPanel">
+		<h1>
+			<img src="/lcsd/leisurelink/images/tchinese/flag_h40_trans.gif" alt="GovHK Logo" height="45" lang="zh">
+		</h1>
+	</div>
+	<div id="headerNavSkip">
+	
+	</div>
+	<div id="headerRightPanel">
+	</div>
+	-->
+                <div id="header">
+                    <div class="logo"><a href="http://www.gov.hk" target="_blank"><img class="resWebPageLogo"
+                                src="/lcsd/leisurelink/images/header.jpg?d=2021m8d18s315" alt="Web Page Logo"
+                                lang="zh"></a>
+                    </div>
+                    <div class="hidden">
+                        <h2>
+                            離開
+                        </h2>
+                    </div>
+                    <div class="exit">
+                        <a class="exit" href="javascript:closeMe();">離開</a>
+                    </div>
+                </div>
+
+                <!-- end of header -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <script type="text/javascript">
+                        < !--
+                        function logout() {
+                            // call logoff.so in AJAX to increase the reliability
+                            // in some cases, logoff.do is not called using redirect, especially for IE 
+                            var xmlHttp;
+                            try {  // Firefox, Opera 8.0+, Safari
+                                xmlHttp = new XMLHttpRequest();
+                            } catch (e) {
+                                // Internet Explorer
+                                try {
+                                    xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+                                } catch (e) {
+                                    try {
+                                        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                                    } catch (e) {
+                                        location.href = "/lcsd/leisurelink/logoff.do";
+                                    }
+                                }
+                            }
+
+                            xmlHttp.onreadystatechange = function () {
+                                if (xmlHttp.readyState == 4) {
+                                    //do nothing
+                                }
+                            }
+
+                            xmlHttp.open("GET", "/lcsd/leisurelink/logoff.do", true);
+                            xmlHttp.send(null);
+                        }
+
+                    function closeMe() {
+
+                        var answer = confirm("你確定離開此服務?");
+
+
+                        if (answer) {
+                            if (parent.disableOnbeforeunload != undefined) {
+                                parent.disableOnbeforeunload();
+                            }
+                            if (parent.dummy_container != undefined && parent.dummy_container.logout != undefined) {
+                                parent.dummy_container.logout = null;
+                            }
+                            logout();
+                            if (parent.window != null) {
+                                parent.window.close();
+                            } else {
+                                window.close();
+                            }
+                        }
+                    }
+//-->
+                </script>
+                <img src="/lcsd/leisurelink/images/subheader_bg_top.jpg" style="width:100%; height:3px">
+                <div id="bannerPanel">
+                    <div class="cluster"><input type="image" id="menuIcon" src="/lcsd/leisurelink/images/main-menu.png"
+                            alt="" class="menuIconStyleClass"></div>
+                    <div class="icon"><img src="/lcsd/leisurelink/images/subheader_icon.gif" alt="" class="icon"></div>
+                    <div class="text"> 租訂康樂設施(普及版) </div>
+                </div>
+                <img src="/lcsd/leisurelink/images/subheader_bg_bottom.jpg"
+                    style="width:100%; height:3px;margin-bottom: 18px;">
+                <div id="midPanel">
+
+                    <div id="leftMenuPanel" class="leftMenuPanelStyleClass" style="">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <div class="leftMenuSubPanel">
+                            <div class="navstep">
+                                <div class="stepBoxWhiteBackground">
+                                    <h2><strong>第一步</strong></h2>
+                                    <br>
+                                    登入
+                                </div>
+                                <div class="stepBoxWhiteBackground" id="sel">
+                                    <h2><strong>第二步</strong></h2>
+                                    <br>
+                                    選擇設施
+                                </div>
+                                <div class="stepBoxWhiteBackground">
+                                    <h2><strong>第三步</strong></h2>
+                                    <br>
+                                    確定
+                                </div>
+                                <div class="stepBoxWhiteBackground">
+                                    <h2><strong>第四步</strong></h2>
+                                    <br>
+                                    網上即時繳費
+                                </div>
+                                <div class="stepBoxWhiteBackground">
+                                    <h2><strong>第五步</strong></h2>
+                                    <br>
+                                    收取確認通知書
+                                </div>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+< !--
+                                parent.document.title="Screen ID SC-573-5-102 康樂及文化事務署 - 康體通";
+
+//-->
+                        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <script>
+                            $(document).ready(function () {
+                                var isMobile = false;
+                                //device detection
+                                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                                    isMobile = true;
+                                }
+                                if (isMobile) {
+
+                                    $('#helpDeskLink').attr('href', 'http://leisurelink.lcsd.gov.hk/demo/chineseformobile/index.html');
+
+                                }
+                            });
+                        </script>
+                        <div class="leftMenuSubPanel">
+                            <div class="leftMenuTitle">
+                                <div class="navlink_item">
+
+                                    <h2><strong><a id="helpDeskLink" class="navlink" target="_blank"
+                                                href="http://leisurelink.lcsd.gov.hk/demo/chinese/index.html">網上說明</a></strong>
+                                    </h2>
+
+
+                                </div>
+                            </div>
+                            <div class="leftMenuTitle">
+                                <div class="navlink_item">
+
+                                    <h2><strong><a class="navlink" target="_blank"
+                                                href="http://w2.leisurelink.lcsd.gov.hk/leisurelink/faq/faqIndex.jsp?lang=TC">常見問題</a></strong>
+                                    </h2>
+
+
+                                </div>
+                            </div>
+
+                            <div class="leftMenuTitle">
+                                <div class="navlink_item2">
+                                    <div class="title">相關資訊</div>
+                                    <div>
+                                        <a target="_blank" href="http://www.lcsd.gov.hk/">康樂及文化事務署
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="leftMenuTitle">
+                                <div class="navlink_item2">
+                                    <div class="title">
+                                        查詢康體設施或活動
+                                    </div>
+                                    <div>
+                                        請致電
+                                    </div>
+                                    <div>
+                                        <span class="note">
+                                            1823
+                                        </span>
+                                        或
+                                        <a target="_blank"
+                                            href="https://www.lcsd.gov.hk/clpss/tc/webApp/PhoneAddress.do">
+                                            相關分區康樂事務辦事處／場地
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="leftMenuTitle">
+                                <div class="navlink_item2">
+                                    <div class="title">
+                                        查詢康體通系統的使用
+                                    </div>
+                                    <div class="title">
+                                        請致電
+                                    </div>
+                                    <div><span class="note">
+                                            2679 6822
+                                        </span></div>
+                                    <div class="title">
+                                        或電郵至
+                                    </div>
+                                    <div>
+                                        <a href="mailto:leisurelink.helpdesk.hk@nec.com.hk">
+                                            leisurelink. helpdesk.hk @nec.com.hk
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="leftMenuTitle">
+                                <div class="navlink_item2">
+                                    <img src="/lcsd/leisurelink/images/tchinese/nav_perform.gif" alt="服務承諾">
+                                    <br>
+                                    <div class="smallText">
+                                        我們會盡可能於1個工作日內處理你的申請
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div id="contentPanel" class="contentPanelStyleClass">
+                        <div id="formPanelResponsive" class="formPanel">
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <div class="cell">
+                                <div class="contenttable">
+                                    <div class="step_hd">
+                                        <div class="step_no">第二步</div>
+                                        <img src="/lcsd/leisurelink/images/title_step_arrow.jpg" style="float:left;">
+
+                                        <div style="display:inline-block;width:60%;">
+                                            <span class="step_info1">選擇設施
+                                                <span class="step_remark1">你的租訂資料如下，請確認或更改資料。</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <script language="JavaScript">
+                                function dobAutoTab(srcField, srcFieldMaxLength, targetField, evt) {
+                                    evt = (evt) ? evt : event;
+                                    var charCode = (evt.charCode) ? evt.charCode : ((evt.keyCode) ? evt.keyCode : ((evt.which) ? evt.which : 0));
+                                    if (targetField == null) return;
+                                    if (srcField.value.length == srcFieldMaxLength && charCode >= 32) {
+                                        $(targetField).focus();
+                                    }
+                                }
+	
+
+
+< !--
+ var message = {
+
+                                    selectedFacilityId: "",
+                                    selectedFacilityTypeId: "",
+                                    selectedDate: "",
+                                    selectedSession: "",
+                                    selectedArea: "",
+                                    selected1Venue: "",
+                                    selected1Location: "",
+                                    selected2Venue: "",
+                                    selected2Location: "",
+                                    selected3Venue: "",
+                                    selected3Location: "",
+                                    isAmendAction: "N",
+                                    isReallocation: "",
+
+                                    flowID: "1",
+                                    viewcourt: " 查看設施／場地的租訂情況 ",
+                                    hidecourt: " 隱藏設施/場地的租訂情況 ",
+                                    pleaseSelectDate: "- 請選擇日期 -",
+                                    pleaseSelectFacility: "- 請選擇設施 -",
+                                    pleaseSelectType: "- 請選擇種類 -",
+                                    pleaseSelectTime: "- 請選擇時段 -",
+                                    pleaseSelectArea: "- 請選擇地區 -",
+                                    pleaseSelectVenue: "- 請選擇地點 -",
+                                    pleaseSelectLocation: "- 請選擇場地 -",
+                                    printAddressButton: " 列印地址 ",
+                                    address: "地址",
+                                    tel: "電話號碼",
+                                    venueNoticeDetail: " 詳情 ",
+                                    contextPath: "/lcsd/leisurelink",
+                                    currentDateYYYYMMDD: "20210818",
+                                    currentTimeHHMM: "0020",
+                                    incompleteRemoteRequest: "由於系統繁忙無法完成你的請求，請重試。",
+                                    incompatibleRemoteService: "本系統已更新，請重新載入或清除瀏覽器緩存後再試。",
+                                    unexpectedRemoteError1: "非預期的錯誤發生: ",
+                                    unexpectedRemoteError2: "請重試。",
+                                    loading: "載入中",
+                                    currentTimeSlotCheckedWarnMsg: "請注意你所選擇的時段現已進行中!",
+                                    noDataIsFound: "沒有可供選擇的設施。",
+                                    calendarValue: "20210818:18-08-2021 (三);20210819:19-08-2021 (四);20210820:20-08-2021 (五);20210821:21-08-2021 (六);20210822:22-08-2021 (日);20210823:23-08-2021 (一);",
+                                    timeCheck: "0",
+                                    facilityList: "7:羽毛球場;2:籃球場;3:排球場;9:足球場;10:活動室;15:舞蹈室;6:乒乓球檯;1:網球場;5:健身設施;4:壁球場;13:高爾夫球設施;75:美式桌球桌;17:美式足球場;11:曲棍球場;8:草地滾球場;12:運動攀登設施;19:風帆;18:滑浪風帆;20:獨木舟;21:其他艇類;226:投球場;124:棒球場;125:棒球練習場;74:箭藝;73:繩網陣;231:英式桌球檯;236:板球;250:單車賽道;256:合球場;257:巧固球場;268:門球場;269:匹克球場;272:健球場;267:閃避球場;271:躲避盤場;",
+                                    sessionTimeList: "AM_早上(上午07:00 - 下午01:00);PM_下午(下午12:00 - 下午07:00);EV_晚間(下午06:00 - 下午11:00)"
+                                };
+
+                                -->
+                            </script>
+
+
+                            <div id="errorPanel" style="display:none;">
+                                <div class="errorPanel" id="errorPanel">
+                                    <div class="errorHeader">
+                                        <img name="globalErrorIcon" src="../../images/tchinese/error.gif">
+                                        錯誤
+                                    </div>
+                                    <div id="errorDetails">
+                                    </div>
+                                </div>
+                                <div class="formBox">
+                                    <br>
+                                </div>
+                            </div>
+
+
+
+
+                            註有＊的項目必須輸入資料<br>
+                            <div class="cell">
+                                <div class="contenttable">
+
+                                    <div class="formSubTitleWithScrollIcon2" style="padding-bottom: 10px;">
+                                        <div class="scrollHeading">
+                                            <b>輸入租訂資料</b>
+                                        </div>
+                                        <div style="float:right"><img id="scrollIconLeft2"
+                                                src="/lcsd/leisurelink/images/scroll_left_hand3-01-01.png"
+                                                style="width:28px;height:26px;display:none;"></div>
+                                        <div style="float:left"><img id="scrollIconRight2"
+                                                src="/lcsd/leisurelink/images/scroll_right_hand3-01-02.png"
+                                                style="width:24px;height:26px;display:none;"></div>
+                                    </div>
+
+
+
+                                    <div class="row">
+                                        <div id="tableLayout">
+                                            <table border="0" width="100%" align="center" id="selectFacilityTable">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="1" width="100%" id="selectFacilityTable_td1">
+                                                            <div class="formFieldLabelnew">日期</div>
+                                                            <div class="dateWithCalender" id="dateWithCalenderBlock">
+                                                                <div class="formFieldMandatoryAreaWithDatePicker">*
+                                                                </div>
+                                                                <div class="TablePanelWithDatePicker">
+                                                                    <div id="datePanel">
+
+                                                                        <select tabindex="0"
+                                                                            class="gwt-ListBox resListBox">
+                                                                            <option value="">- 請選擇日期 -</option>
+                                                                            <option value="20210818">18-08-2021 (三)
+                                                                            </option>
+                                                                            <option value="20210819">19-08-2021 (四)
+                                                                            </option>
+                                                                            <option value="20210820">20-08-2021 (五)
+                                                                            </option>
+                                                                            <option value="20210821">21-08-2021 (六)
+                                                                            </option>
+                                                                            <option value="20210822">22-08-2021 (日)
+                                                                            </option>
+                                                                            <option value="20210823">23-08-2021 (一)
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="tableText">
+                                                                        或在月曆上選擇日期
+                                                                    </div>
+                                                                </div>
+                                                                <div id="datePickerFacilityResponsive"
+                                                                    class="datePickerResponsive">
+                                                                    <table border="1" cellspacing="0" cellpadding="0"
+                                                                        bgcolor="#ffffff">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>&nbsp;</td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">日
+                                                                                </td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">一
+                                                                                </td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">二
+                                                                                </td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">三
+                                                                                </td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">四
+                                                                                </td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">五
+                                                                                </td>
+                                                                                <td align="center"
+                                                                                    style="vertical-align: middle;">六
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td rowspan="2">
+                                                                                    <div
+                                                                                        style="width:48px;text-align: center;">
+                                                                                        21年8月</div>
+                                                                                </td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td><input type="button"
+                                                                                        onclick="onCalendarClick(&quot;20210818&quot;)"
+                                                                                        value="18"
+                                                                                        class="calendarNormalDay"></td>
+                                                                                <td><input type="button"
+                                                                                        onclick="onCalendarClick(&quot;20210819&quot;)"
+                                                                                        value="19"
+                                                                                        class="calendarNormalDay"></td>
+                                                                                <td><input type="button"
+                                                                                        onclick="onCalendarClick(&quot;20210820&quot;)"
+                                                                                        value="20"
+                                                                                        class="calendarNormalDay"></td>
+                                                                                <td><input type="button"
+                                                                                        onclick="onCalendarClick(&quot;20210821&quot;)"
+                                                                                        value="21"
+                                                                                        class="calendarNormalDay"></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><input type="button"
+                                                                                        onclick="onCalendarClick(&quot;20210822&quot;)"
+                                                                                        value="22"
+                                                                                        class="calendarHolidayDay"></td>
+                                                                                <td><input type="button"
+                                                                                        onclick="onCalendarClick(&quot;20210823&quot;)"
+                                                                                        value="23"
+                                                                                        class="calendarNormalDay"></td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td>&nbsp;</td>
+                                                                                <td>&nbsp;</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="clear">&nbsp;</div>
+                                                            <div class="formFieldLabelnew">設施</div>
+                                                            <div class="formFieldMandatoryArea">*</div>
+                                                            <div class="TablePanelNew">
+                                                                <div id="facilityPanel">
+
+                                                                    <select tabindex="0" class="gwt-ListBox resListBox">
+                                                                        <option value="">- 請選擇設施 -</option>
+                                                                        <option value="7">羽毛球場</option>
+                                                                        <option value="2">籃球場</option>
+                                                                        <option value="3">排球場</option>
+                                                                        <option value="9">足球場</option>
+                                                                        <option value="10">活動室</option>
+                                                                        <option value="15">舞蹈室</option>
+                                                                        <option value="6">乒乓球檯</option>
+                                                                        <option value="1">網球場</option>
+                                                                        <option value="5">健身設施</option>
+                                                                        <option value="4">壁球場</option>
+                                                                        <option value="13">高爾夫球設施</option>
+                                                                        <option value="75">美式桌球桌</option>
+                                                                        <option value="17">美式足球場</option>
+                                                                        <option value="11">曲棍球場</option>
+                                                                        <option value="8">草地滾球場</option>
+                                                                        <option value="12">運動攀登設施</option>
+                                                                        <option value="19">風帆</option>
+                                                                        <option value="18">滑浪風帆</option>
+                                                                        <option value="20">獨木舟</option>
+                                                                        <option value="21">其他艇類</option>
+                                                                        <option value="226">投球場</option>
+                                                                        <option value="124">棒球場</option>
+                                                                        <option value="125">棒球練習場</option>
+                                                                        <option value="74">箭藝</option>
+                                                                        <option value="73">繩網陣</option>
+                                                                        <option value="231">英式桌球檯</option>
+                                                                        <option value="236">板球</option>
+                                                                        <option value="250">單車賽道</option>
+                                                                        <option value="256">合球場</option>
+                                                                        <option value="257">巧固球場</option>
+                                                                        <option value="268">門球場</option>
+                                                                        <option value="269">匹克球場</option>
+                                                                        <option value="272">健球場</option>
+                                                                        <option value="267">閃避球場</option>
+                                                                        <option value="271">躲避盤場</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clear">&nbsp;</div>
+                                                            <div class="formFieldLabelnew">種類</div>
+                                                            <div class="formFieldMandatoryArea">*</div>
+                                                            <div class="TablePanelNew">
+                                                                <div id="facilityTypePanel">
+
+                                                                    <select tabindex="0" class="gwt-ListBox resListBox">
+                                                                        <option value="">- 請選擇種類 -</option>
+                                                                        <option value="22">羽毛球場 (新界區)</option>
+                                                                        <option value="306">羽毛球場 (市區)</option>
+                                                                        <option value="504">羽毛球場 (空調)(市區)</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clear">&nbsp;</div>
+                                                            <div class="formFieldLabelnew">時間</div>
+                                                            <div class="formFieldMandatoryArea">*</div>
+                                                            <div class="TablePanelNew">
+                                                                <div id="sessionTimePanel">
+
+                                                                    <select tabindex="0" class="gwt-ListBox resListBox">
+                                                                        <option value="">- 請選擇時段 -</option>
+                                                                        <option value="AM">早上(上午07:00 - 下午01:00)
+                                                                        </option>
+                                                                        <option value="PM">下午(下午12:00 - 下午07:00)
+                                                                        </option>
+                                                                        <option value="EV">晚間(下午06:00 - 下午11:00)
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clear">&nbsp;</div>
+                                                            <div class="formFieldLabelnew">地區</div>
+                                                            <div class="formFieldMandatoryArea">*</div>
+                                                            <div class="TablePanelNew">
+                                                                <div id="areaPanel">
+
+                                                                    <select tabindex="0" class="gwt-ListBox resListBox">
+                                                                        <option value="">- 請選擇地區 -</option>
+                                                                        <option value="CW">香港 - 中西區</option>
+                                                                        <option value="EN">香港 - 東區</option>
+                                                                        <option value="SN">香港 - 南區</option>
+                                                                        <option value="WCH">香港 - 灣仔區</option>
+                                                                        <option value="KC">九龍 - 九龍城區</option>
+                                                                        <option value="KT">九龍 - 觀塘區</option>
+                                                                        <option value="SSP">九龍 - 深水埗區</option>
+                                                                        <option value="WTS">九龍 - 黃大仙區</option>
+                                                                        <option value="YTM">九龍 - 油尖旺區</option>
+                                                                        <option value="*HK">香港 - 所有地區</option>
+                                                                        <option value="*KLN">九龍 - 所有地區</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="clear">&nbsp;<br></div>
+                                    </div>
+
+                                    <!-- <div id="searchResultTable" class="table-wrapper">
+		<div id="searchResultTableScroll" class="scrollable">
+		<table border="1" class="timeSlotTable" style="width: 100%;"><colgroup><col></colgroup><tbody><tr><td></td><td></td><td align="center" style="vertical-align: middle;"><div>07:00<br>|<br>08:00</div></td><td align="center" style="vertical-align: middle;"><div>08:00<br>|<br>09:00</div></td><td align="center" style="vertical-align: middle;"><div>09:00<br>|<br>10:00</div></td><td align="center" style="vertical-align: middle;"><div>10:00<br>|<br>11:00</div></td><td align="center" style="vertical-align: middle;"><div>11:00<br>|<br>12:00</div></td><td align="center" style="vertical-align: middle;"><div>12:00<br>|<br>13:00</div></td></tr><tr><td><table cellspacing="0" cellpadding="0"><tbody><tr><td align="left" style="vertical-align: top;"><span class="gwt-RadioButton"><input type="radio" name="vRoom" id="gwt-uid-1" tabindex="0"><label for="gwt-uid-1"></label></span></td><td align="left" style="vertical-align: top;"><div><div onblur="this.className='actionBtnBlockSmall';" onmouseout="this.className='actionBtnBlockSmall';" onfocus="this.className='actionBtnBlockSmall_hover';" onmouseover="this.className='actionBtnBlockSmall_hover';" class="actionBtnBlockSmall"> View Booking Status of Facility/Venue </div></div></td><td align="left" style="vertical-align: top;"><div style="display: none;"><div onblur="this.className='actionBtnBlockSmall';" onmouseout="this.className='actionBtnBlockSmall';" onfocus="this.className='actionBtnBlockSmall_hover';" onmouseover="this.className='actionBtnBlockSmall_hover';" class="actionBtnBlockSmall"> Hide Booking Status of Facility/Venue </div></div></td></tr></tbody></table></td><td>Tin Ping Sports Centre - Arena</td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-2" tabindex="0"><label for="gwt-uid-2"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-3" tabindex="0"><label for="gwt-uid-3"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-4" tabindex="0"><label for="gwt-uid-4"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-5" tabindex="0"><label for="gwt-uid-5"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-6" tabindex="0"><label for="gwt-uid-6"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-7" tabindex="0"><label for="gwt-uid-7"></label></span></td></tr><tr style="display: none;"><td></td><td>Facility/Court No. 1</td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-8" tabindex="0"><label for="gwt-uid-8"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-9" tabindex="0"><label for="gwt-uid-9"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-10" tabindex="0"><label for="gwt-uid-10"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-11" tabindex="0"><label for="gwt-uid-11"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-12" tabindex="0"><label for="gwt-uid-12"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-13" tabindex="0"><label for="gwt-uid-13"></label></span></td></tr><tr style="display: none;"><td></td><td>Facility/Court No. 2</td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-14" tabindex="0"><label for="gwt-uid-14"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-15" tabindex="0"><label for="gwt-uid-15"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-16" tabindex="0"><label for="gwt-uid-16"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-17" tabindex="0"><label for="gwt-uid-17"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-18" tabindex="0"><label for="gwt-uid-18"></label></span></td><td class="timeslotCellPeak"><span class="noborder"><input type="checkbox" id="gwt-uid-19" tabindex="0"><label for="gwt-uid-19"></label></span></td></tr></tbody></table>
+		<div><br>&nbsp;<br></div></div>
+	</div> -->
+
+                                    <div id="preferencePanel" style="">
+
+                                        <div id="tableLayout">
+                                            <div class="formBox" id="preferenceNote.mandatory" style="">請選擇至少一個地點和場地,
+                                                並按"查詢" 找尋可租訂的時段</div>
+                                            <div class="formBox" id="preferenceNote.optional" style="display: none;">
+                                                下列項目可選擇是否輸入資料。你可選擇不輸入資料，直接按「搜尋」以搜尋可供租訂的時段。</div>
+                                            <div class="rowseperator">
+                                                <div class="seperator">&nbsp;</div>
+                                            </div>
+                                            <div class="clear">&nbsp;</div>
+                                        </div>
+                                        <!--  1st preference -->
+                                        <div class="row">
+                                            <div class="clear">&nbsp;</div>
+                                            <div class="formFieldLabelEn">第一選擇</div>
+                                            <div class="formFieldMandatoryArea" id="preference1.mandatory.header"></div>
+                                            <div class="clear">&nbsp;</div>
+                                            <div class="formFieldLabelEn">場地</div>
+                                            <div class="formFieldMandatoryArea" id="preference1.mandatory.venue">
+                                                <div class="gwt-Label">*</div>
+                                            </div>
+                                            <div class="selectTextSize">
+                                                <div id="preference1.venuePanel">
+
+                                                    <select tabindex="0" class="gwt-ListBox resListBox">
+                                                        <option value="">- 請選擇地點 -</option>
+                                                        <option value="224">紅磡市政大廈體育館</option>
+                                                        <option value="228">九龍城體育館</option>
+                                                        <option value="233">土瓜灣體育館</option>
+                                                        <option value="279">振華道體育館</option>
+                                                        <option value="281">曉光街體育館</option>
+                                                        <option value="284">九龍灣體育館</option>
+                                                        <option value="287">藍田南體育館</option>
+                                                        <option value="288">牛頭角道體育館</option>
+                                                        <option value="291">鯉魚門體育館</option>
+                                                        <option value="292">順利邨體育館</option>
+                                                        <option value="293">瑞和街體育館</option>
+                                                        <option value="259">長沙灣體育館</option>
+                                                        <option value="261">荔枝角公園體育館</option>
+                                                        <option value="263">北河街體育館</option>
+                                                        <option value="264">保安道體育館</option>
+                                                        <option value="266">石硤尾公園體育館</option>
+                                                        <option value="244">彩虹道羽毛球中心</option>
+                                                        <option value="245">彩虹道體育館</option>
+                                                        <option value="246">竹園體育館</option>
+                                                        <option value="248">東啟德體育館</option>
+                                                        <option value="254">摩士公園體育館</option>
+                                                        <option value="256">牛池灣體育館</option>
+                                                        <option value="257">蒲崗村道體育館</option>
+                                                        <option value="239">界限街體育館</option>
+                                                        <option value="241">花園街體育館</option>
+                                                        <option value="305">官涌體育館</option>
+                                                        <option value="307">九龍公園體育館</option>
+                                                        <option value="70000521">大角咀體育館</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clear">&nbsp;</div>
+                                            <div id="tableLayoutNoScroll">
+                                                <div class="formFieldLabelEn">場地</div>
+                                                <div class="formFieldMandatoryArea" id="preference1.mandatory.location">
+                                                    <div class="gwt-Label">*</div>
+                                                </div>
+                                                <div class="formFieldSelectComponent40">
+                                                    <div id="preference1.locationPanel">
+
+                                                        <select tabindex="0" class="gwt-ListBox resListBox">
+                                                            <option value="2064">主場</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <br><br>
+                                                <div class="formFieldInputComponent30 addressInfoPanel"
+                                                    id="preference1.addressInfoPanel">
+                                                    <div class="gwt-HTML">地址 : 九龍九龍城衙前圍道一零零號九龍城市政大廈三樓<br>電話號碼 : 2716
+                                                        1007 <input class="actionBtnSmall" value=" 列印地址 "
+                                                            onmouseover="this.className='actionBtnSmall_hover';"
+                                                            onfocus="this.className='actionBtnSmall_hover';"
+                                                            onmouseout="this.className='actionBtnSmall';"
+                                                            onblur="this.className='actionBtnSmall';"
+                                                            onclick="printAddress('228');" type="button"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="clear"><br></div>
+                                        <!--  2nd preference -->
+                                        <div class="row">
+                                            <div class="clear">&nbsp;</div>
+                                            <div class="formFieldLabelEn">第二選擇</div>
+                                            <div class="clear">&nbsp;</div>
+                                            <div class="formFieldLabelEn">場地</div>
+                                            <div class="formFieldMandatoryArea"></div>
+                                            <div class="selectTextSize">
+                                                <div id="preference2.venuePanel">
+
+                                                    <select tabindex="0" class="gwt-ListBox resListBox">
+                                                        <option value="">- 請選擇地點 -</option>
+                                                        <option value="224">紅磡市政大廈體育館</option>
+                                                        <option value="228">九龍城體育館</option>
+                                                        <option value="233">土瓜灣體育館</option>
+                                                        <option value="279">振華道體育館</option>
+                                                        <option value="281">曉光街體育館</option>
+                                                        <option value="284">九龍灣體育館</option>
+                                                        <option value="287">藍田南體育館</option>
+                                                        <option value="288">牛頭角道體育館</option>
+                                                        <option value="291">鯉魚門體育館</option>
+                                                        <option value="292">順利邨體育館</option>
+                                                        <option value="293">瑞和街體育館</option>
+                                                        <option value="259">長沙灣體育館</option>
+                                                        <option value="261">荔枝角公園體育館</option>
+                                                        <option value="263">北河街體育館</option>
+                                                        <option value="264">保安道體育館</option>
+                                                        <option value="266">石硤尾公園體育館</option>
+                                                        <option value="244">彩虹道羽毛球中心</option>
+                                                        <option value="245">彩虹道體育館</option>
+                                                        <option value="246">竹園體育館</option>
+                                                        <option value="248">東啟德體育館</option>
+                                                        <option value="254">摩士公園體育館</option>
+                                                        <option value="256">牛池灣體育館</option>
+                                                        <option value="257">蒲崗村道體育館</option>
+                                                        <option value="239">界限街體育館</option>
+                                                        <option value="241">花園街體育館</option>
+                                                        <option value="305">官涌體育館</option>
+                                                        <option value="307">九龍公園體育館</option>
+                                                        <option value="70000521">大角咀體育館</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clear">&nbsp;</div>
+                                            <div id="tableLayoutNoScroll">
+                                                <div class="formFieldLabelEn">場地</div>
+                                                <div class="formFieldMandatoryArea"></div>
+                                                <div class="formFieldSelectComponent40">
+                                                    <div id="preference2.locationPanel">
+
+                                                        <select tabindex="0" class="gwt-ListBox resListBox"></select>
+                                                    </div>
+                                                </div>
+                                                <br><br>
+                                                <div class="formFieldInputComponent30 addressInfoPanel"
+                                                    id="preference2.addressInfoPanel">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clear"><br></div>
+                                        <!--  3rd preference -->
+                                        <div class="row">
+                                            <div class="clear">&nbsp;</div>
+                                            <div class="formFieldLabelEn">第三選擇</div>
+                                            <div class="clear">&nbsp;</div>
+                                            <div class="formFieldLabelEn">場地</div>
+                                            <div class="formFieldMandatoryArea"></div>
+                                            <div class="selectTextSize">
+                                                <div id="preference3.venuePanel">
+
+                                                    <select tabindex="0" class="gwt-ListBox resListBox" disabled="">
+                                                        <option value="">- 請選擇地點 -</option>
+                                                        <option value="224">紅磡市政大廈體育館</option>
+                                                        <option value="228">九龍城體育館</option>
+                                                        <option value="233">土瓜灣體育館</option>
+                                                        <option value="279">振華道體育館</option>
+                                                        <option value="281">曉光街體育館</option>
+                                                        <option value="284">九龍灣體育館</option>
+                                                        <option value="287">藍田南體育館</option>
+                                                        <option value="288">牛頭角道體育館</option>
+                                                        <option value="291">鯉魚門體育館</option>
+                                                        <option value="292">順利邨體育館</option>
+                                                        <option value="293">瑞和街體育館</option>
+                                                        <option value="259">長沙灣體育館</option>
+                                                        <option value="261">荔枝角公園體育館</option>
+                                                        <option value="263">北河街體育館</option>
+                                                        <option value="264">保安道體育館</option>
+                                                        <option value="266">石硤尾公園體育館</option>
+                                                        <option value="244">彩虹道羽毛球中心</option>
+                                                        <option value="245">彩虹道體育館</option>
+                                                        <option value="246">竹園體育館</option>
+                                                        <option value="248">東啟德體育館</option>
+                                                        <option value="254">摩士公園體育館</option>
+                                                        <option value="256">牛池灣體育館</option>
+                                                        <option value="257">蒲崗村道體育館</option>
+                                                        <option value="239">界限街體育館</option>
+                                                        <option value="241">花園街體育館</option>
+                                                        <option value="305">官涌體育館</option>
+                                                        <option value="307">九龍公園體育館</option>
+                                                        <option value="70000521">大角咀體育館</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clear">&nbsp;</div>
+                                            <div id="tableLayoutNoScroll">
+                                                <div class="formFieldLabelEn">場地</div>
+                                                <div class="formFieldMandatoryArea"></div>
+                                                <div class="formFieldSelectComponent40">
+                                                    <div id="preference3.locationPanel">
+
+                                                        <select tabindex="0" class="gwt-ListBox resListBox"
+                                                            disabled=""></select>
+                                                    </div>
+                                                </div>
+                                                <br><br>
+                                                <div class="formFieldInputComponent30 addressInfoPanel"
+                                                    id="preference3.addressInfoPanel">
+                                                </div>
+                                            </div>
+                                            <div class="formBox"><br></div>
+                                        </div>
+                                        <div class="clear">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cell">
+                                <div class="contenttable_button" id="searchButtonPanel" style="">
+                                    <div class="btnbar" id="searchBtnPanel">
+
+                                        <input class="actionBtn" value="清除"
+                                            onmouseover="this.className='actionBtn_hover';"
+                                            onfocus="this.className='actionBtn_hover';"
+                                            onmouseout="this.className='actionBtn';"
+                                            onblur="this.className='actionBtn';"
+                                            onclick="onClearClick();resize();return false;" type="button"><input
+                                            class="actionBtnContinue" value="搜尋"
+                                            onmouseover="this.className='actionBtnContinue_hover';"
+                                            onfocus="this.className='actionBtnContinue_hover';"
+                                            onmouseout="this.className='actionBtnContinue';"
+                                            onblur="this.className='actionBtnContinue';" onclick="onSearchClick();"
+                                            type="button">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="loading" style="display: none;">
+                                尋找中, 請稍候...
+                            </div>
+                            <a name="searchResultAnchor"></a>
+                            <div id="searchResult" style="">
+                                <div class="formBox" id="scroll2Result">
+                                    <br>
+                                </div>
+                                <div class="formSubTitleWithScrollIcon" style="padding-bottom: 10px;">
+                                    <div class="scrollHeading">
+
+                                        選擇時段
+
+                                    </div>
+                                    <div style="float:right"><img id="scrollIconLeft"
+                                            src="/lcsd/leisurelink/images/scroll_left_hand3-01-01.png"
+                                            style="width:28px;height:26px;display:none;"></div>
+                                    <div style="float:left"><img id="scrollIconRight"
+                                            src="/lcsd/leisurelink/images/scroll_right_hand3-01-02.png"
+                                            style="width:24px;height:26px;display:none; "></div>
+                                </div>
+                                <div class="clear">
+                                    <br>
+                                </div>
+                                <div id="searchResultTable" class="TablePanel" style="width: 1108px;">
+                                    <table border="1" class="timeSlotTable" style="width: 100%;">
+                                        <colgroup>
+                                            <col>
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <td style="min-width: 100px;"></td>
+                                                <td style="min-width: 60px;"></td>
+                                                <td align="center" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">07:00<br>|<br>08:00</div>
+                                                </td>
+                                                <td align="center" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">08:00<br>|<br>09:00</div>
+                                                </td>
+                                                <td align="center" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">09:00<br>|<br>10:00</div>
+                                                </td>
+                                                <td align="center" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">10:00<br>|<br>11:00</div>
+                                                </td>
+                                                <td align="center" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">11:00<br>|<br>12:00</div>
+                                                </td>
+                                                <td align="center" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">12:00<br>|<br>13:00</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <table cellspacing="0" cellpadding="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left" style="vertical-align: top;"><span
+                                                                        class="gwt-RadioButton"><input type="radio"
+                                                                            name="vRoom" id="gwt-uid-1246"
+                                                                            tabindex="0"><label
+                                                                            for="gwt-uid-1246"></label></span></td>
+                                                                <td align="left" style="vertical-align: top;">
+                                                                    <div class="gwt-HTML">
+                                                                        <div onblur="this.className='actionBtnBlockSmall';"
+                                                                            onmouseout="this.className='actionBtnBlockSmall';"
+                                                                            onfocus="this.className='actionBtnBlockSmall_hover';"
+                                                                            onmouseover="this.className='actionBtnBlockSmall_hover';"
+                                                                            class="actionBtnBlockSmall"> 查看設施／場地的租訂情況
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td align="left" style="vertical-align: top;">
+                                                                    <div class="gwt-HTML" style="display: none;">
+                                                                        <div onblur="this.className='actionBtnBlockSmall';"
+                                                                            onmouseout="this.className='actionBtnBlockSmall';"
+                                                                            onfocus="this.className='actionBtnBlockSmall_hover';"
+                                                                            onmouseover="this.className='actionBtnBlockSmall_hover';"
+                                                                            class="actionBtnBlockSmall"> 隱藏設施/場地的租訂情況
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                                <td>九龍城體育館 - 主場</td>
+                                                <td class="timeslotCellNonPeak"><span class="noborder"><input
+                                                            type="checkbox" id="gwt-uid-1247" tabindex="0"><label
+                                                            for="gwt-uid-1247"></label></span></td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">&nbsp;</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">&nbsp;</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">&nbsp;</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">&nbsp;</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">&nbsp;</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 1</td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 2</td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 3</td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 4</td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">O</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 5</td>
+                                                <td class="timeslotCellNonPeak"><span class="noborder"><input
+                                                            type="checkbox" id="gwt-uid-1277" tabindex="0"><label
+                                                            for="gwt-uid-1277"></label></span></td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 6</td>
+                                                <td class="timeslotCellNonPeak"><span class="noborder"><input
+                                                            type="checkbox" id="gwt-uid-1283" tabindex="0"><label
+                                                            for="gwt-uid-1283"></label></span></td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 7</td>
+                                                <td class="timeslotCellNonPeak"><span class="noborder"><input
+                                                            type="checkbox" id="gwt-uid-1289" tabindex="0"><label
+                                                            for="gwt-uid-1289"></label></span></td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                            </tr>
+                                            <tr style="display: none;">
+                                                <td></td>
+                                                <td>設施/ 球場編號 8</td>
+                                                <td class="timeslotCellNonPeak"><span class="noborder"><input
+                                                            type="checkbox" id="gwt-uid-1295" tabindex="0"><label
+                                                            for="gwt-uid-1295"></label></span></td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">C</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                                <td class="timeslotCellNonPeak">
+                                                    <div class="gwt-HTML">X</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="gwt-HTML"><br>&nbsp;<br></div>
+                                </div>
+
+                                <div id="venueNoticePanel" style="">
+                                    <div class="formSubTitle">
+                                        場地通告
+                                    </div>
+                                    <div class="clear">
+                                        <br>
+                                    </div>
+                                    <div class="formFieldPanelColor">
+                                        <div id="venueNoticeArea">
+                                            <table cellspacing="10" cellpadding="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td align="left" style="vertical-align: top;">
+                                                            <div>
+                                                                <div class="gwt-HTML">*
+                                                                    九龍城體育館一號乒乓球室暫無升降機直達，使用輪椅的人士請租用二號或三號乒乓球室。<br></div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="formBox">
+                                        <br>
+                                    </div>
+                                </div>
+
+
+                                <div class="cell">
+                                    <div class="row">
+                                        <div id="searchResultTable">
+                                            <table border="1" align="center" cellpadding="1" cellspacing="2"
+                                                width="100%">
+
+                                                <tbody>
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="#FFFFCC"><input type="Checkbox"
+                                                                onclick="this.checked=false;this.blur();"></td>
+                                                        <td width="44%" bgcolor="#FFFFFF">7天內可供租訂的繁忙時段</td>
+                                                        <td width="6%" bgcolor="#CCFFCC"><input type="Checkbox"
+                                                                onclick="this.checked=false;this.blur();"></td>
+                                                        <td width="44%" bgcolor="#FFFFFF">7天內可供租訂的非繁忙時段</td>
+                                                    </tr>
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="#FFFCC">&nbsp;</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">7天內不可供租訂的繁忙時段或該段節的網上預訂時限已過
+                                                        </td>
+                                                        <td width="6%" bgcolor="#CCFFCC">&nbsp;</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">7天內不可供租訂的非繁忙時段或該段節的網上預訂時限已過
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="silver"><span
+                                                                class="style3NotAvailable">&nbsp;</span></td>
+                                                        <td width="44%" bgcolor="#FFFFFF">暫時未能接受租訂</td>
+                                                        <td width="6%" bgcolor="#FFFFFF">O</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">已被團體租訂</td>
+                                                    </tr>
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="#FFFFFF">M</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">維修期</td>
+                                                        <td width="6%" bgcolor="#FFFFFF">R</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">租訂進行中</td>
+                                                    </tr>
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="#FFFFFF">C</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">已被個人或團體開始進行或完成預訂作其他活動用途</td>
+                                                        <td width="6%" bgcolor="#FFFFFF">W</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">
+                                                            因天氣惡劣或其他事故而給予的補場(補場日期為由原先租訂日期起計的15天內)</td>
+                                                    </tr>
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="#FFFFFF">Z</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">
+                                                            因天氣惡劣或其他事故而遭取消的時段(使用者可於15天內辦理補場)</td>
+                                                        <td width="6%" bgcolor="#FFFFFF">X</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">已被租訂的時段</td>
+                                                    </tr>
+
+                                                    <tr align="left" height="30">
+                                                        <td width="6%" bgcolor="#FFFFFF">F</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">
+                                                            「可供免費預訂」(可於指定時間到各康體通櫃檯以先到先得方式辦理預訂服務)</td>
+                                                        <td width="6%" bgcolor="#FFFFFF">G</td>
+                                                        <td width="44%" bgcolor="#FFFFFF">即日取消的時段 </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="clear">
+                                            <br>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div id="ageRestrictionPanel" style="display: none;">
+                                    <div class="formFieldLabel20" style="width:auto;">出生日期 </div>
+                                    <div class="formFieldMandatoryArea">*</div>
+                                    <div class="formFieldInputComponent65">
+                                        <input type="text" name="dobDD" maxlength="2" size="2"
+                                            onkeyup="dobAutoTab(this, 2, dobMM, event);" id="dobDD">
+                                        <input type="text" name="dobMM" maxlength="2" size="2"
+                                            onkeyup="dobAutoTab(this, 2, dobYYYY, event);" id="dobMM">
+                                        <input type="text" name="dobYYYY" maxlength="4" size="4" id="dobYYYY">
+                                        <span class="alignTop">
+                                            &nbsp;
+                                            (日期格式為DD-MM-YYYY(日∕月∕年))
+                                        </span>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="cell">
+                                    <div class="contenttable">
+                                        <div class="row">
+                                            <div class="formBoxWithPadding" id="notePanel">
+                                                <div class="gwt-HTML">
+                                                    注意：<br>-你在繁忙時間最多可選擇2個時段，非繁忙時間則最多可選擇4個時段。<br>-按「查看設施／場地的租訂情況」檢視已揀選場地內每個球場可供租訂的時段。(如欲使用同一球場連續兩個時段，可剔選同一球場編號)<br>-按「隱藏設施/場地的租訂情況」隱藏整個場地可供租訂的時段。(系統會自動編配球場編號)<br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="cell">
+                                    <div class="contenttable_button" id="confirmButtonPanel">
+                                        <div class="btnbar" id="searchBtnPanel">
+                                            <input class="actionBtn" value="清除"
+                                                onmouseover="this.className='actionBtn_hover';"
+                                                onfocus="this.className='actionBtn_hover';"
+                                                onmouseout="this.className='actionBtn';"
+                                                onblur="this.className='actionBtn';"
+                                                onclick="onClearClick();resize();return false;" type="button"><input
+                                                class="actionBtnContinue" value="租訂"
+                                                onmouseover="this.className='actionBtnContinue_hover';"
+                                                onfocus="this.className='actionBtnContinue_hover';"
+                                                onmouseout="this.className='actionBtnContinue';"
+                                                onblur="this.className='actionBtnContinue';" onclick="onConfirmClick();"
+                                                type="button">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                            <div id="loadingConfirm" style="display:none">
+                                尋找中, 請稍候...
+                            </div>
+                            <div class="empty" style="height: 405px;">
+                                <br>
+                            </div>
+                            <div class="emptySmall">
+                                <br>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                <div id="footerPanel" class="screenOnly">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div id="leftMenuPanel">
+                        <div class="section group">
+                            <div class="col span_1_of_6">
+                                <a class="footer" href="http://www.gov.hk/tc/about/aboutus.htm"
+                                    target="_new">關於「香港政府一站通」</a>
+                            </div>
+                            <div class="col span_1_of_6">
+                                <a class="footer" href="http://www.gov.hk/tc/about/linkpolicy/index.htm"
+                                    target="_new">連結到「香港政府一站通」</a>
+                            </div>
+                            <div class="col span_1_of_6">
+                                <a class="footer" href="http://www.gov.hk/tc/about/sitemap.htm" target="_new">網頁指南</a>
+                            </div>
+                            <div class="col span_1_of_6">
+                                <a class="footer" href="http://www.gov.hk/tc/about/copyright.htm" target="_new">版權告示</a>
+                            </div>
+                            <div class="col span_1_of_6">
+                                <a class="footer" href="http://www.gov.hk/tc/about/privacy.htm" target="_new">私隱政策</a>
+                            </div>
+                            <div class="col span_1_of_6">
+                                <a class="footer" href="http://www.gov.hk/tc/about/disclaimer.htm"
+                                    target="_new">免責聲明</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="contentPanel">
+                        <img class="resLogoFooter" alt="亞洲國際都會" src="/lcsd/leisurelink/images/tchinese/logo_footer.gif">
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script language="JavaScript">
+		if (defaultFocus) {
+			< !--common mainUI-- >
+                setDefaultFocus();
+        }
+    </script>
+    <script type="text/javascript">
+		< !--
+            $(document).ready(function () {
+
+                var options = {
+                    preventDefault: true
+                };
+                if (isEdge) {
+                    var hammertime = new Hammer(document.getElementById("body_shell"), options);
+                    hammertime.on("dragleft dragright swipeleft swiperight", function (ev) { });
+                }
+
+
+                //try to disable back button
+                if (!isEdge && window.history && window.history.pushState) {
+                    history.pushState(null, document.title, location.href);
+                    window.addEventListener('popstate', function (event) {
+                        //history.replaceState(null, document.title, location.href);
+                        history.pushState(null, document.title, location.href);
+                    });
+                }
+
+                scroll2Top();
+
+                var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (iOS) {
+                    $('input[type=submit]').each(function () {
+                        $(this).css('-webkit-appearance', 'none');
+                    });
+                    $('input[type=button]').each(function () {
+                        $(this).css('-webkit-appearance', 'none');
+                    });
+
+                    $('#body_shell').get(0).className = "noScrollHolder";
+
+                }
+
+
+
+                window.onresize = resize;
+
+                $('#formPanelResponsive').on('click', function () {
+                    $('#formPanelResponsive').get(0).className = "formPanel";
+                    if (!($('#leftMenuPanel').get(0).style.display == 'none' || $('#leftMenuPanel').get(0).style.display == '')) {
+                        if (screen.width < 673 || $(window).width() < 673) {
+                            $('#leftMenuPanel').css('display', '');
+                            $('#contentPanel').css('padding-left', '');
+                            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                            if (iOS) {
+                                $('#body_shell').get(0).className = "noScrollHolder";
+                            }
+                        }
+                        if ($('#menuIcon').css('display') == 'block') {
+                            $('#leftMenuPanel').css('display', '');
+                            $('#contentPanel').css('padding-left', '');
+                            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                            if (iOS) {
+                                $('#body_shell').get(0).className = "noScrollHolder";
+                            }
+                        }
+                    }
+
+                });
+
+                /*  var element = document.getElementById('formPanelResponsive');
+                 new ResizeSensor(element, function() {
+                     resizeBottom();
+                 });  */
+
+
+                $('#menuIcon').on('click', function () {
+                    if ($('#leftMenuPanel').get(0).style.display == 'none' || $('#leftMenuPanel').get(0).style.display == '') {
+                        var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                        if (iOS) {
+
+                            $('#body_shell').get(0).className = "responsiveEmpty";
+
+                        }
+                        $('#leftMenuPanel').css('display', 'block');
+                        $('#leftMenuPanel').css('z-index', '1001');
+                        $('#formPanelResponsive').get(0).className = 'formPanelMasked';
+                    } else {
+                        var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                        if (iOS) {
+
+                            $('#body_shell').get(0).className = "noScrollHolder";
+
+                        }
+                        $('#leftMenuPanel').css('display', '');
+                        $('#leftMenuPanel').css('z-index', '1');
+                        $('#formPanelResponsive').get(0).className = 'formPanel';
+                    }
+                });
+
+
+                $("#resultPanel,#searchResultTable").scroll(function () {
+                    //var $width = $("#resultPanel, #searchResultTable").outerWidth();
+                    var $width = $("#resultPanel, #searchResultTable")[0].offsetWidth;
+                    var $scrollWidth = $("#resultPanel, #searchResultTable")[0].scrollWidth;
+                    var $scrollLeft = $("#resultPanel, #searchResultTable").scrollLeft();
+
+                    if ($scrollWidth - $width === $scrollLeft) {
+                        $('#scrollIconRight').css('display', 'none');
+                        $('#scrollIconLeft').css('display', 'block');
+                    }
+
+                    if ($scrollLeft === 0) {
+                        $('#scrollIconLeft').css('display', 'none');
+                        $('#scrollIconRight').css('display', 'block');
+                    }
+
+                });
+
+                $("#ballotResultPanel, #dateWithCalenderBlock").scroll(function () {
+                    //var $width = $("#ballotResultPanel, #dateWithCalenderBlock").outerWidth();
+                    var $width = $("#ballotResultPanel, #dateWithCalenderBlock")[0].offsetWidth;
+                    var $scrollWidth = $("#ballotResultPanel,#dateWithCalenderBlock")[0].scrollWidth;
+                    var $scrollLeft = $("#ballotResultPanel, #dateWithCalenderBlock").scrollLeft();
+
+                    if ($scrollWidth - $width === $scrollLeft) {
+                        $('#scrollIconRight2').css('display', 'none');
+                        $('#scrollIconLeft2').css('display', 'block');
+
+                    }
+
+                    if ($scrollLeft === 0) {
+                        $('#scrollIconLeft2').css('display', 'none');
+                        $('#scrollIconRight2').css('display', 'block');
+                    }
+                });
+
+                $("#penaltyTable").scroll(function () {
+                    //var $width = $("#penaltyTable").outerWidth();
+                    var $width = $("#penaltyTable")[0].offsetWidth;
+                    var $scrollWidth = $("#penaltyTable")[0].scrollWidth;
+                    var $scrollLeft = $("#penaltyTable").scrollLeft();
+
+                    if ($scrollWidth - $width === $scrollLeft) {
+                        $('#scrollIconRight3').css('display', 'none');
+                        $('#scrollIconLeft3').css('display', 'block');
+
+                    }
+
+                    if ($scrollLeft === 0) {
+                        $('#scrollIconLeft3').css('display', 'none');
+                        $('#scrollIconRight3').css('display', 'block');
+                    }
+                });
+
+
+
+
+
+
+            });
+
+	//-->
+
+    </script>
+
+
+
+    <iframe src="javascript:''" id="hk.gov.lcsd.leisurelink.OnlineBookingApp" tabindex="-1"
+        style="position: absolute; width: 0px; height: 0px; border: none;"></iframe>
+</body>
+
+</html>
