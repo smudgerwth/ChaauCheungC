@@ -16,6 +16,20 @@ puppeteer.use(ppUserPrefs({
   }
 }));
 puppeteer.use(StealthPlugin());
+async function get_num_option(page, id){
+  return await page.evaluate(async(id) => {
+    const node = document.querySelector(id);
+    const node_options = node.querySelectorAll('option');
+    return node_options.length;
+  },id);
+}
+async function get_n_th_option(page, id, index){
+  return await page.evaluate(async(id,index) => {
+    const node = document.querySelector(id);
+    const node_options = node.querySelectorAll('option');
+    return node_options[index].value;
+  },id,index);
+}
 
 (async () => {
     const browser = await puppeteer.launch({
@@ -67,8 +81,12 @@ puppeteer.use(StealthPlugin());
         return example_options;
     });
     console.log("val:",dat_val);
-
-    await frame.select('#datePanel > select',dat_val)
+    console.log("num:",await get_num_option(frame,'#datePanel'));
+    console.log("num:",await get_num_option(frame,'#facilityPanel'));
+    console.log("num:",await get_num_option(frame,'#facilityTypePanel'));
+    console.log("num:",await get_num_option(frame,'#sessionTimePanel'));
+    console.log("val:",await get_n_th_option(frame,'#datePanel',3));
+    await frame.select('#datePanel > select',await get_n_th_option(frame,'#datePanel',4))
     // await frame.evaluate(() => {
     //     Array.from(document.querySelector("#datePanel").options).forEach(function(option_element) {
     //         let option_text = option_element.text;
