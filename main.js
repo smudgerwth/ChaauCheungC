@@ -6,6 +6,9 @@ const path = require('path');
 const root = path.dirname(require.main.filename);
 const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
 
+const btn_index = 5; // 0:booking, 5:checking
+const badminton_val = '7';
+
 puppeteer.use(ppUserPrefs({
   userPrefs: {
     devtools: {
@@ -70,13 +73,13 @@ async function solveCaptcha(c_page){
 }
 
 async function regenerateCaptch(c_page){
-    await new Promise(resolve => setTimeout(resolve, 1000))
     await c_page.waitForSelector('.actionBtnSmall');
     console.log('regen');
     await c_page.evaluate(() => {
         let node = document.querySelector('.actionBtnSmall');
         node.click();
     });
+    await new Promise(resolve => setTimeout(resolve, 1000));
 }
 
 async function selectCaptchaKeys(c_page, ocr_captcha){
@@ -100,6 +103,22 @@ async function pressContinue(c_page){
     });
 }
 
+async function get_num_option(page, id){
+	return await page.evaluate(async(id) => {
+		const node = document.querySelector(id);
+		const node_options = node.querySelectorAll('option');
+		return node_options.length;
+	},id);
+}
+
+async function get_n_th_option(page, id, index){
+	return await page.evaluate(async(id,index) => {
+		const node = document.querySelector(id);
+		const node_options = node.querySelectorAll('option');
+		return node_options[index].value;
+	},id,index);
+}
+
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
@@ -109,13 +128,13 @@ async function pressContinue(c_page){
         // ],
         // ignoreDefaultArgs: true,
         args: [
-            '--window-size=640,480',
+            // '--window-size=640,480',
             // '--start-maximized',
             // '--no-sandbox',
             // '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
             // '--single-process',
-            '--incognito',
+            // '--incognito',
         ],
         slowMo: 300, // slow down puppeteer script so that it's easier to follow visually
     });
@@ -132,7 +151,7 @@ async function pressContinue(c_page){
     let btns = await page.$$('.actionBtnBlock');
     console.log('4');
     let newPagePromise = new Promise(x => page.once('popup', x));
-    await btns[0].click();
+    await btns[btn_index].click();
     console.log('5');
 
     let newPage = await newPagePromise;
@@ -161,49 +180,97 @@ async function pressContinue(c_page){
     
     console.log('hihi');
 
-    let config_data = JSON.parse(fs.readFileSync(path.join(root,'config.json')));
     let frame = await elementHandle.contentFrame();
-    console.log(frame)
-    await frame.waitForSelector('#radNonRegId');
-    await frame.click('#radNonRegId');
-    await frame.focus('#hkId');
-    console.log('hkId:'+config_data.hkId);
-    await newPage.keyboard.type(config_data.hkId);
-    await frame.focus('#hkIdCheckDigit');
-    await newPage.keyboard.type(config_data.hkIdCheckDigit);
-    await frame.focus('#telephoneNo');
-    await newPage.keyboard.type(config_data.telephoneNo);
+    // console.log(frame);
 
-    while(true){
-        ocr_captcha = await solveCaptcha(frame);
-        console.log("ocr_captcha:"+ocr_captcha);
-        if(ocr_captcha.length==5 
-            && ocr_captcha.split("").some(function(v,i,a){
-            return a.lastIndexOf(v)!=i;
-          })==false){
-            await selectCaptchaKeys(frame,ocr_captcha);
-            await pressContinue(frame);
-            console.log("wait data");
-            elementHandle = await frame.waitForSelector("#datePanel",{timeout:5000}).catch(error => console.log('failed to wait for the selector'));
-            if(elementHandle != null)
-                break;
-        }
-        else
-        {
-            await regenerateCaptch(frame);
+    if(btn_index==0){
+        let config_data = JSON.parse(fs.readFileSync(path.join(root,'config.json')));
+        await frame.waitForSelector('#radNonRegId');
+        await frame.click('#radNonRegId');
+        await frame.focus('#hkId');
+        console.log('hkId:'+config_data.hkId);
+        await newPage.keyboard.type(config_data.hkId);
+        await frame.focus('#hkIdCheckDigit');
+        await newPage.keyboard.type(config_data.hkIdCheckDigit);
+        await frame.focus('#telephoneNo');
+        await newPage.keyboard.type(config_data.telephoneNo);
+
+        while(true){
+            ocr_captcha = await solveCaptcha(frame);
+            console.log("ocr_captcha:"+ocr_captcha);
+            if(ocr_captcha.length==5 
+                && ocr_captcha.split("").some(function(v,i,a){
+                return a.lastIndexOf(v)!=i;
+            })==false){
+                await selectCaptchaKeys(frame,ocr_captcha);
+                await pressContinue(frame);
+                console.log("wait data");
+                elementHandle = await frame.waitForSelector("#datePanel",{timeout:5000}).catch(error => console.log('failed to wait for the selector'));
+                if(elementHandle != null)
+                    break;
+            }
+            else
+            {
+                await regenerateCaptch(frame);
+            }
         }
     }
-    let dat_val = await frame.evaluate(() => {
-        const example = document.querySelector('#datePanel');
-        const example_options = example.querySelectorAll('option');
-        let val;
-        for(let node of example_options){
+    await frame.waitForSelector("#datePanel");
+
+	await frame.select('#facilityPanel > select',badminton_val);
+	let num_date = await get_num_option(frame,'#datePanel');
+	console.log("num_date",num_date);
+	for(let i=0; i<num_date; i++){
+		let date_val = await get_n_th_option(frame,'#datePanel',i);
+		// console.log("date_val:",date_val);
+		if(!date_val) continue;
+		await frame.select('#datePanel > select',date_val);
+
+		let num_facilityType = await get_num_option(frame,'#facilityTypePanel');
+		for(let j=0; j<num_facilityType; j++){
+			let facilityType_val = await get_n_th_option(frame,'#facilityTypePanel',j);
+			if(!facilityType_val) continue;
+			await frame.select('#facilityTypePanel > select',facilityType_val);
+			
+			let num_sessionTime = await get_num_option(frame,'#sessionTimePanel');
+			for(let k=0; k<num_sessionTime; k++){
+				let sessionTime_val = await get_n_th_option(frame,'#sessionTimePanel',k);
+				if(!sessionTime_val) continue;
+				await frame.select('#sessionTimePanel > select',sessionTime_val);		
+			
+				let num_area = await get_num_option(frame,'#areaPanel');
+				for(let l=0; l<num_area; l++){
+					let area_val = await get_n_th_option(frame,'#areaPanel',l);
+					if((!area_val)||(num_area>3 && l<num_area-2)) continue;
+					await frame.select('#areaPanel > select',area_val);		
+			
+					break;
+				}
+			
+				break;		
+			}
+			break;
+		}
+		break;
+	}
+
+
+
+
+
+
+
+    // let dat_val = await frame.evaluate(() => {
+    //     const example = document.querySelector('#datePanel');
+    //     const example_options = example.querySelectorAll('option');
+    //     let val;
+    //     for(let node of example_options){
             
-            val =  node.value
-        }
-        return val;
-    });
-    console.log("val:",dat_val);
+    //         val =  node.value
+    //     }
+    //     return val;
+    // });
+    // console.log("val:",dat_val);
     // await frame.evaluate(() => {
     //     Array.from(document.querySelector("#datePanel").options).forEach(function(option_element) {
     //         let option_text = option_element.text;
