@@ -122,7 +122,7 @@ async function get_n_th_option(page, id, index){
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
-        devtools: true,
+        // devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
         // ],
@@ -130,11 +130,11 @@ async function get_n_th_option(page, id, index){
         args: [
             // '--window-size=640,480',
             // '--start-maximized',
-            // '--no-sandbox',
+            '--no-sandbox',
             // '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
             // '--single-process',
-            // '--incognito',
+            '--incognito',
         ],
         slowMo: 300, // slow down puppeteer script so that it's easier to follow visually
     });
@@ -243,10 +243,23 @@ async function get_n_th_option(page, id, index){
 					let area_val = await get_n_th_option(frame,'#areaPanel',l);
 					if((!area_val)||(num_area>3 && l<num_area-2)) continue;
 					await frame.select('#areaPanel > select',area_val);		
-			
-					break;
+                    let num_venue = await get_num_option(frame,'#preference1\\.venuePanel');
+                    for(let m=0; m<num_venue; m++){
+                        let venue_val = await get_n_th_option(frame,'#preference1\\.venuePanel',m);
+                        if(!venue_val) continue;
+                        await frame.select('##preference1\\.venuePanel > select',venue_val);		
+                        let num_location = await get_num_option(frame,'#preference1\\.locationPanel');
+                        for(let n=0; n<num_location; n++){
+                            let location_val = await get_n_th_option(frame,'#preference1\\.locationPanel',n);
+                            if(!location_val) continue;
+                            await frame.select('#preference1.locationPanel > select',location_val);		
+                            await pressContinue(frame);
+					        break;
+                        }
+                        break;
+                    }
+                    break;
 				}
-			
 				break;		
 			}
 			break;
