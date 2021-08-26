@@ -92,7 +92,8 @@ async function selectCaptchaKeys(c_page, ocr_captcha){
             for(let node of document.querySelectorAll('.kbkey.button.red')){
                 if (ocr_captcha.charAt(i)===(node.innerText)){
                     node.click();
-                    await new Promise(resolve => setTimeout(resolve, 1000))
+                    await delayMs(1000);
+                    // await new Promise(resolve => setTimeout(resolve, 1000))
                     break;
                 }
             }
@@ -287,17 +288,21 @@ async function csvAddRow(array){
                             });
                             console.log("tr_len",tr_len.toString());
                             csvAddColum(data_array,tr_len);
+                            await delayMs(1000);
+                            await frame.waitForSelector("#searchResultTable");
+                            csvAddRow(data_array);
+                            csvAddColum(data_array, date_text, sessionTime_text, venue_text, location_text);
 					        // break;
                         }
                         // break;
                     }
-                    break;
+                    // break;
 				}
-				break;		
+				// break;		
 			}
-			break;
+			// break;
 		}
-		break;
+		// break;
 	}
     // csv_data = "Date,Time,Venue,Location,Slot1,Slot2,Slot3,Slot4,Slot5,Slot6,Slot7\n"
     csv_data = data_array.map(row => row.join(',')).join('\n');
