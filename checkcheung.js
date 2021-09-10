@@ -6,6 +6,7 @@ const path = require('path');
 const root = path.dirname(require.main.filename);
 const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
 
+let py_sh = path.join(root,'sendTgMsg.py');
 puppeteer.use(ppUserPrefs({
   userPrefs: {
     devtools: {
@@ -31,16 +32,17 @@ async function csvAddRow(array){
         //     '--enable-automation',
         // ],
         // ignoreDefaultArgs: true,
+        executablePath: '/usr/bin/chromium-browser',
         args: [
             // '--window-size=640,480',
-            '--start-maximized',
-            // '--no-sandbox',
-            // '--disable-setuid-sandbox',
+            // '--start-maximized',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
             // '--single-process',
-            '--incognito',
+            // '--incognito',
         ],
-        slowMo: 200, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 300, // slow down puppeteer script so that it's easier to follow visually
     });
 
     let [page] = await browser.pages();
@@ -61,10 +63,12 @@ async function csvAddRow(array){
         sortOrder('start_date', 'asc');
         sortOrder('start_time', 'asc');
     });
-
     let result_array = [];
+    
+
     for(let saved_result=0; saved_result<num_result;){
-        let [table_array, num_page_result] = await page.evaluate(async() => {
+        await page.waitForSelector('#pageSearchResult');
+	let [table_array, num_page_result] = await page.evaluate(async() => {
             let array = [];
             let table = document.querySelector('#pageSearchResult');
             for(let i=0; i<table.rows.length; i++){
@@ -108,7 +112,7 @@ async function csvAddRow(array){
     };
 
     await new Promise((reject) =>{ 
-        PythonShell.run('sendTgMsg.py', options, function (err, result){
+        PythonShell.run(py_sh, options, function (err, result){
             if (err) reject(err);
             // result is an array consisting of messages collected 
             //during execution of script.
