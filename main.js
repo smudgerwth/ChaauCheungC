@@ -9,6 +9,38 @@ const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
 const btn_index = 5; // 0:booking, 5:checking
 const badminton_val = '7';
 
+const facilityType = [22,504];
+const area = ["*NTE","*KLN"];
+const venue = [
+    [
+        60,61,94,
+        70000734,70001033,70001333
+    ],
+    [
+        279,281,284,
+        287,288,291,
+        292,293,244,
+        245,246,248,
+        254,256,257
+    ]
+];
+
+const nt = 22;
+const ntEast = "*NTE";
+const ntEastList = [
+    60,61,94,
+    70000734,70001033,70001333
+];
+const urban = 504;
+const kowloon = "*KLN";
+const kowloonList = [
+    279,281,284,
+    287,288,291,
+    292,293,244,
+    245,246,248,
+    254,256,257
+];
+
 puppeteer.use(ppUserPrefs({
   userPrefs: {
     devtools: {
@@ -72,9 +104,6 @@ async function solveCaptcha(c_page){
     return ocr_captcha;
 }
 
-async function delayMs(ms){
-    await new Promise(resolve => setTimeout(resolve, ms));
-}
 async function regenerateCaptch(c_page){
     await c_page.waitForSelector('.actionBtnSmall');
     console.log('regen');
@@ -82,8 +111,7 @@ async function regenerateCaptch(c_page){
         let node = document.querySelector('.actionBtnSmall');
         node.click();
     });
-    await delayMs(1000);
-    // await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 async function selectCaptchaKeys(c_page, ocr_captcha){
@@ -92,8 +120,7 @@ async function selectCaptchaKeys(c_page, ocr_captcha){
             for(let node of document.querySelectorAll('.kbkey.button.red')){
                 if (ocr_captcha.charAt(i)===(node.innerText)){
                     node.click();
-                    await delayMs(1000);
-                    // await new Promise(resolve => setTimeout(resolve, 1000))
+                    await new Promise(resolve => setTimeout(resolve, 500))
                     break;
                 }
             }
@@ -124,6 +151,35 @@ async function getOption(page, id, index){
 	},id,index);
 }
 
+async function getOptionTextByValue(page, id, value){
+	return await page.evaluate(async(id,value) => {
+		let node = document.querySelector(id);
+		let node_options = node.querySelector('option[value="'+value+'"]');
+		return node_options.innerText;
+	},id,value);
+}
+
+async function getVenueResultArray(page, venue_text){
+    return await page.evaluate(async(venue_text) => {
+        let table = document.querySelector("#searchResult #searchResultTable table");
+        for (let row of table.rows) {
+            let cell = row.cells
+            cell_location_text = cell[1].innerText;
+            if(cell_location_text.includes(venue_text)==false){
+                continue;
+            }
+            let array = [];
+            for(let ind=2;ind<cell.length;ind++){
+                array.push(cell[ind].innerText);
+            }
+            return array;
+            // let timeslot_length = table.rows[1].cells.length;
+            // let textt = node1.rows[1].cells[1].innerText;
+            // return textt;
+            // return node2.rows[2].length;
+        }
+    },venue_text);
+}
 async function csvAddColum(array, ...data){
     array[array.length-1].push(data);
 }
@@ -135,7 +191,7 @@ async function csvAddRow(array){
 (async () => {
     const browser = await puppeteer.launch({
         headless: false, // launch headful mode
-        // devtools: true,
+        devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
         // ],
@@ -149,7 +205,7 @@ async function csvAddRow(array){
             // '--single-process',
             '--incognito',
         ],
-        slowMo: 300, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 100, // slow down puppeteer script so that it's easier to follow visually
     });
 
     let [page] = await browser.pages();
@@ -240,10 +296,13 @@ async function csvAddRow(array){
 		if(!date_val) continue;
 		await frame.select('#datePanel > select',date_val);
 
-		let num_facilityType = await getNumOfOptions(frame,'#facilityTypePanel');
+		// let num_facilityType = await getNumOfOptions(frame,'#facilityTypePanel');
+		let num_facilityType = facilityType.length;
 		for(let j=0; j<num_facilityType; j++){ //use for each?
-			let [facilityType_val, facilityType_text] = await getOption(frame,'#facilityTypePanel',j);
-			if(!facilityType_val) continue;
+			// let [facilityType_val, facilityType_text] = await getOption(frame,'#facilityTypePanel',j);
+			// if(!facilityType_val) continue;
+            facilityType_val = facilityType[j].toString();
+            facilityType_text = await getOptionTextByValue(frame,'#facilityTypePanel',facilityType_val);
 			await frame.select('#facilityTypePanel > select',facilityType_val);
 			
 			let num_sessionTime = await getNumOfOptions(frame,'#sessionTimePanel');
@@ -252,46 +311,72 @@ async function csvAddRow(array){
 				if(!sessionTime_val) continue;
 				await frame.select('#sessionTimePanel > select',sessionTime_val);		
 			
-				let num_area = await getNumOfOptions(frame,'#areaPanel');
-				for(let l=0; l<num_area; l++){
-					let [area_val, area_text] = await getOption(frame,'#areaPanel',l);
-					if((!area_val)||(num_area>3 && l<num_area-2)) continue;
+				// let num_area = await getNumOfOptions(frame,'#areaPanel');
+				// for(let l=0; l<num_area; l++){
+				// 	let [area_val, area_text] = await getOption(frame,'#areaPanel',l);
+				// 	if((!area_val)||(num_area>3 && l<num_area-2)) continue;
+                {
+                    let area_val = area[j];
 					await frame.select('#areaPanel > select',area_val);		
-                    let num_venue = await getNumOfOptions(frame,'#preference1\\.venuePanel');
-                    for(let m=0; m<num_venue; m++){
-                        let [venue_val, venue_text] = await getOption(frame,'#preference1\\.venuePanel',m);
-                        if(!venue_val) continue;
-                        await frame.select('#preference1\\.venuePanel > select',venue_val);		
-                        let num_location = await getNumOfOptions(frame,'#preference1\\.locationPanel');
-                        for(let n=0; n<num_location; n++){
-                            let [location_val, location_text] = await getOption(frame,'#preference1\\.locationPanel',n);
-                            if(!location_val) continue;
-                            await frame.select('#preference1\\.locationPanel > select',location_val);		
+                    // let num_venue = await getNumOfOptions(frame,'#preference1\\.venuePanel');
+                    let num_venue = venue[j].length;
+                    // for(let m=0; m<num_venue; m++){
+                    for(let m=0; m<num_venue;){
+                        // let [venue_val, venue_text] = await getOption(frame,'#preference1\\.venuePanel',m);
+                        // if(!venue_val) continue;
+                        let venue_text1, venue_text2, venue_text3;
+                        venue_val1 = venue[j][m].toString();
+                        venue_text1 = await getOptionTextByValue(frame,'#preference1\\.venuePanel',venue_val1);
+                        // console.log("venue_text1:",venue_text1);
+                        await frame.select('#preference1\\.venuePanel > select',venue_val1);		
+                        m++;
+                        if(m<num_venue){
+                            venue_val2 = venue[j][m].toString();
+                            venue_text2 = await getOptionTextByValue(frame,'#preference2\\.venuePanel',venue_val2);
+                            await frame.select('#preference2\\.venuePanel > select',venue_val2);		
+                            m++;
+                        }
+                        if(m<num_venue){
+                            venue_val3 = venue[j][m].toString();
+                            venue_text3 = await getOptionTextByValue(frame,'#preference3\\.venuePanel',venue_val3);
+                            await frame.select('#preference3\\.venuePanel > select',venue_val3);		
+                            m++;
+                        }
+                        // let num_location = await getNumOfOptions(frame,'#preference1\\.locationPanel');
+                        // for(let n=0; n<num_location; n++){
+                        //     let [location_val, location_text] = await getOption(frame,'#preference1\\.locationPanel',n);
+                        //     if(!location_val) continue;
+                        //     await frame.select('#preference1\\.locationPanel > select',location_val);		
+                        {
                             await pressContinue(frame);
-                            // await delayMs(1000);
+                            // await new Promise(resolve => setTimeout(resolve, 500))
                             await frame.waitForSelector("#searchResultTable");
-                            csvAddRow(data_array);
-                            csvAddColum(data_array, date_text, sessionTime_text, venue_text, location_text);
-
-                            let tr_len = await frame.evaluate(async() => {
-                                let table = document.querySelector("#searchResult #searchResultTable table");
-                                let cell = table.rows[1].cells
-                                let array = [];
-                                for(let ind=2;ind<cell.length;ind++){
-                                    array.push(cell[ind].innerText);
-                                }
-                                return array;
-                                // let timeslot_length = table.rows[1].cells.length;
-                                // let textt = node1.rows[1].cells[1].innerText;
-                                // return textt;
-                                // return node2.rows[2].length;
-                            });
-                            console.log("tr_len",tr_len.toString());
-                            csvAddColum(data_array,tr_len);
-                            await delayMs(1000);
-                            await frame.waitForSelector("#searchResultTable");
-                            csvAddRow(data_array);
-                            csvAddColum(data_array, date_text, sessionTime_text, venue_text, location_text);
+                            let tr_len;
+                            if(venue_text1)
+                            {
+                                csvAddRow(data_array);
+                                csvAddColum(data_array, date_text, sessionTime_text, venue_text1);
+                                tr_len = await getVenueResultArray(frame,venue_text1);
+                                console.log("tr_len",tr_len.toString());
+                                csvAddColum(data_array,tr_len);
+                            }
+                            if(venue_text2)
+                            {
+                                csvAddRow(data_array);
+                                csvAddColum(data_array, date_text, sessionTime_text, venue_text2);
+                                tr_len = await getVenueResultArray(frame,venue_text2);
+                                console.log("tr_len",tr_len.toString());
+                                csvAddColum(data_array,tr_len);
+                            }
+                            if(venue_text3)
+                            {
+                                csvAddRow(data_array);
+                                csvAddColum(data_array, date_text, sessionTime_text, venue_text3);
+                                tr_len = await getVenueResultArray(frame,venue_text3);
+                                console.log("tr_len",tr_len.toString());
+                                csvAddColum(data_array,tr_len);
+                            }
+                            
 					        // break;
                         }
                         // break;
@@ -308,7 +393,7 @@ async function csvAddRow(array){
     csv_data = data_array.map(row => row.join(',')).join('\n');
     console.log(csv_data.toString());
 
-    fs.writeFileSync(path.join(root,'result.csv'), csv_data);
+    fs.writeFileSync(path.join(root,'result.csv'), csv_data, 'utf8');
 
 
 
