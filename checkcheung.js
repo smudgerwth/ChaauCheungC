@@ -52,23 +52,26 @@ async function csvAddRow(array){
     console.log('2');
     // await page.waitForNavigation({waitUntil: 'networkidle0'});
     console.log('3');
-    
+    await page.waitForSelector('#facility');
+    await page.waitForSelector('#searchBtn');
     await page.select('#facility','羽毛球場');
     await page.click('#searchBtn');
+    await page.waitForSelector('#pageSearchResult');
     let num_result = await page.evaluate(async() => {
        return document.querySelector('.panel-body.table-responsive div strong').innerText;
     });
     console.log('num_result:',num_result);    
     await page.evaluate(async() => {
         sortOrder('start_date', 'asc');
-        sortOrder('start_time', 'asc');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+	sortOrder('start_time', 'asc');
+        await new Promise(resolve => setTimeout(resolve, 1000));
     });
     let result_array = [];
-    
 
     for(let saved_result=0; saved_result<num_result;){
         await page.waitForSelector('#pageSearchResult');
-	let [table_array, num_page_result] = await page.evaluate(async() => {
+        let [table_array, num_page_result] = await page.evaluate(async() => {
             let array = [];
             let table = document.querySelector('#pageSearchResult');
             for(let i=0; i<table.rows.length; i++){
@@ -93,13 +96,14 @@ async function csvAddRow(array){
 
         saved_result += num_page_result;
         console.log('saved_result:',saved_result);
-        await page.click('#pag_next');
+	await page.waitForSelector('#pag_next');
+	await page.click('#pag_next');
     }
     // console.log('result_array',result_array.toString());
     let csv_data = result_array.map(row => row.join(',')).join('\n');
     console.log(csv_data.toString());
 
-    // fs.writeFileSync(path.join(root,'result.csv'), csv_data, 'utf8');
+    fs.writeFileSync(path.join(root,'curr_result.csv'), csv_data, 'utf8');
     await page.close();
     await browser.close();
     
@@ -108,7 +112,7 @@ async function csvAddRow(array){
         mode: 'text',
         pythonOptions: ['-u'], // get print results in real-time
         // scriptPath: 'path/to/my/scripts', //If you are having python_test.py script in same folder, then it's optional.
-        args: [csv_data.toString()] //An argument which can be accessed in the script using sys.argv[1]
+        // args: [csv_data.toString()] //An argument which can be accessed in the script using sys.argv[1]
     };
 
     await new Promise((reject) =>{ 
