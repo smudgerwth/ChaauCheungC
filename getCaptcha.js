@@ -10,8 +10,8 @@ const fs = require('fs');
     console.log("1")
     await page.goto('http://leisurelink.lcsd.gov.hk/?lang=en')
     console.log("2")
-    await page.waitForNavigation({waitUntil: 'networkidle0'})
-    for(let i = 0; i < 1000 ; i++){
+    await page.waitForNavigation({ waitUntil: 'networkidle0' })
+    for (let i = 0; i < 1000; i++) {
         console.log("3")
         let btns = await page.$$('.actionBtnBlock')
         console.log("4")
@@ -28,8 +28,8 @@ const fs = require('fs');
         });
         let data = captcha.replace(/^data:image\/\w+;base64,/, "");
         let buf = new Buffer.from(data, 'base64');
-        fs.writeFile('captcha\\captcha'+i+'.jpg', buf,function(err, result) {
-            if(err){console.log('error', err);}
+        fs.writeFile('captcha\\captcha' + i + '.jpg', buf, function (err, result) {
+            if (err) { console.log('error', err); }
         });
         await newPage.close()
         await page.reload()
