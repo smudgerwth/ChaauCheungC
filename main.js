@@ -1,3 +1,4 @@
+const process = require('process');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const fs = require('fs');
@@ -184,15 +185,15 @@ async function csvAddRow(array){
         args: [
             // '--window-size=640,480',
             '--start-maximized',
-            // '--no-sandbox',
-            // '--disable-setuid-sandbox',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
             // '--single-process',
-            '--incognito',
+            // '--incognito',
         ],
         slowMo: 100, // slow down puppeteer script so that it's easier to follow visually
     });
-
+try{
     let [page] = await browser.pages();
     // page.on('console', consoleObj => console.log(consoleObj.text()));
     console.log('1');
@@ -372,15 +373,15 @@ async function csvAddRow(array){
                             }
 					        // break;
                         }
-                        break;
+                        // break;
                     }
-                    break;
+                    // break;
 				}
-				break;		
+				// break;		
 			}
-			break;
+			// break;
 		}
-		break;
+		// break;
 	}
     // csv_data = "Date,Time,Venue,Location,Slot1,Slot2,Slot3,Slot4,Slot5,Slot6,Slot7\n"
     csv_data = data_array.map(row => row.join(',')).join('\n');
@@ -438,4 +439,9 @@ async function csvAddRow(array){
             // resolve(result[0]);
         });
     });
+} catch (error){
+	console.log(error);
+	await browser.close();
+	process.exitcode = 1;
+}
 })();

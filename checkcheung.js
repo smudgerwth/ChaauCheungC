@@ -1,3 +1,4 @@
+const process = require('process');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const fs = require('fs');
@@ -26,13 +27,13 @@ async function csvAddRow(array){
 }
 (async () => {
     const browser = await puppeteer.launch({
-        // headless: false, // launch headful mode
+         headless: false, // launch headful mode
         // devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
         // ],
         // ignoreDefaultArgs: true,
-        executablePath: '/usr/bin/chromium-browser',
+       // executablePath: '/usr/bin/chromium-browser',
         args: [
             // '--window-size=640,480',
             // '--start-maximized',
@@ -42,9 +43,9 @@ async function csvAddRow(array){
             // '--single-process',
             // '--incognito',
         ],
-        slowMo: 300, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 100, // slow down puppeteer script so that it's easier to follow visually
     });
-
+try{
     let [page] = await browser.pages();
     // page.on('console', consoleObj => console.log(consoleObj.text()));
     console.log('1');
@@ -57,6 +58,7 @@ async function csvAddRow(array){
     await page.select('#facility','羽毛球場');
     await page.click('#searchBtn');
     await page.waitForSelector('#pageSearchResult');
+    await new Promise(resolve => setTimeout(resolve, 1000));
     let num_result = await page.evaluate(async() => {
        return document.querySelector('.panel-body.table-responsive div strong').innerText;
     });
@@ -104,7 +106,7 @@ async function csvAddRow(array){
     console.log(csv_data.toString());
 
     fs.writeFileSync(path.join(root,'curr_result.csv'), csv_data, 'utf8');
-    await page.close();
+    // await page.close();
     await browser.close();
     
     // Run Python script
@@ -126,4 +128,9 @@ async function csvAddRow(array){
     });
 
     console.log('end');
+} catch (error){
+	console.log(error);
+	await browser.close();
+	process.exitcode = 1;
+}
 })();
