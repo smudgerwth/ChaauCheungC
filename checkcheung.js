@@ -27,7 +27,7 @@ async function csvAddRow(array) {
 }
 (async () => {
     const browser = await puppeteer.launch({
-        headless: false, // launch headful mode
+        // headless: false, // launch headful mode
         // devtools: true,
         // ignoreDefaultArgs: [
         //     '--enable-automation',
