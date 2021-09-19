@@ -43,7 +43,7 @@ async function csvAddRow(array) {
             // '--single-process',
             // '--incognito',
         ],
-        slowMo: 100, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 200, // slow down puppeteer script so that it's easier to follow visually
     });
     try {
         let [page] = await browser.pages();
@@ -116,21 +116,20 @@ async function csvAddRow(array) {
             // scriptPath: 'path/to/my/scripts', //If you are having python_test.py script in same folder, then it's optional.
             // args: [csv_data.toString()] //An argument which can be accessed in the script using sys.argv[1]
         };
-
-        await new Promise((reject) => {
+        await new Promise((resolve, reject) => {
             PythonShell.run(py_sh, options, function (err, result) {
                 if (err) reject(err);
                 // result is an array consisting of messages collected 
                 //during execution of script.
                 console.log('result: ', result);
-                // resolve(result[0]);
+                resolve();
             });
         });
-
         console.log('end');
     } catch (error) {
         console.log(error);
         await browser.close();
         process.exitcode = 1;
     }
+    console.log(new Date().toString());
 })();
