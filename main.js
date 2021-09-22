@@ -191,7 +191,7 @@ async function csvAddRow(array) {
             // '--single-process',
             // '--incognito',
         ],
-        slowMo: 200, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 150, // slow down puppeteer script so that it's easier to follow visually
     });
     try {
         let [page] = await browser.pages();
@@ -272,6 +272,18 @@ async function csvAddRow(array) {
         await frame.waitForSelector("#datePanel");
 
         await frame.select('#facilityPanel > select', badminton_val);
+
+        let holi_list = await frame.evaluate(async ()=> {
+            let nodes = document.querySelectorAll('#datePickerFacilityResponsive table input[type="button"]');
+            let array = [];
+            for(let node of nodes){
+                array.push(node.className.replace('calendarHolidayDay','H').replace('calendarNormalDay','N'));
+            }
+            return array;
+        });
+        // console.log(holi_list);
+        // console.log(holi_list[0]);
+
         let num_date = await getNumOfOptions(frame, '#datePanel');
         console.log("num_date", num_date);
         for (let i = 0; i < num_date - 1; i++) {     //Skip last date
@@ -298,100 +310,80 @@ async function csvAddRow(array) {
                     sessionTime_text = sessionTime_text.slice(5, 7);
                     await frame.select('#sessionTimePanel > select', sessionTime_val);
 
-                    // let num_area = await getNumOfOptions(frame,'#areaPanel');
-                    // for(let l=0; l<num_area; l++){
-                    // 	let [area_val, area_text] = await getOption(frame,'#areaPanel',l);
-                    // 	if((!area_val)||(num_area>3 && l<num_area-2)) continue;
-                    {
-                        let area_val = area[j];
-                        await frame.select('#areaPanel > select', area_val);
-                        // let num_venue = await getNumOfOptions(frame,'#preference1\\.venuePanel');
-                        let num_venue = venue[j].length;
-                        // for(let m=0; m<num_venue; m++){
-                        for (let m = 0; m < num_venue;) {
-                            // let [venue_val, venue_text] = await getOption(frame,'#preference1\\.venuePanel',m);
-                            // if(!venue_val) continue;
-                            let venue_text1, venue_text2, venue_text3;
-                            venue_val1 = venue[j][m].toString();
-                            venue_text1 = await getOptionTextByValue(frame, '#preference1\\.venuePanel', venue_val1);
-                            // console.log("venue_text1:",venue_text1);
-                            await frame.select('#preference1\\.venuePanel > select', venue_val1);
+                    let area_val = area[j];
+                    await frame.select('#areaPanel > select', area_val);
+                    // let num_venue = await getNumOfOptions(frame,'#preference1\\.venuePanel');
+                    let num_venue = venue[j].length;
+                    // for(let m=0; m<num_venue; m++){
+                    for (let m = 0; m < num_venue;) {
+                        // let [venue_val, venue_text] = await getOption(frame,'#preference1\\.venuePanel',m);
+                        // if(!venue_val) continue;
+                        let venue_text1, venue_text2, venue_text3;
+                        venue_val1 = venue[j][m].toString();
+                        venue_text1 = await getOptionTextByValue(frame, '#preference1\\.venuePanel', venue_val1);
+                        // console.log("venue_text1:",venue_text1);
+                        await frame.select('#preference1\\.venuePanel > select', venue_val1);
+                        m++;
+                        if (m < num_venue) {
+                            venue_val2 = venue[j][m].toString();
+                            venue_text2 = await getOptionTextByValue(frame, '#preference2\\.venuePanel', venue_val2);
+                            await frame.select('#preference2\\.venuePanel > select', venue_val2);
                             m++;
-                            if (m < num_venue) {
-                                venue_val2 = venue[j][m].toString();
-                                venue_text2 = await getOptionTextByValue(frame, '#preference2\\.venuePanel', venue_val2);
-                                await frame.select('#preference2\\.venuePanel > select', venue_val2);
-                                m++;
+                        }
+                        if (m < num_venue) {
+                            venue_val3 = venue[j][m].toString();
+                            venue_text3 = await getOptionTextByValue(frame, '#preference3\\.venuePanel', venue_val3);
+                            await frame.select('#preference3\\.venuePanel > select', venue_val3);
+                            m++;
+                        }
+                
+                        await pressContinue(frame);
+                        // await new Promise(resolve => setTimeout(resolve, 500))
+                        await frame.waitForSelector("#searchResultTable");
+                        let tr_len;
+                        let offset = 0;
+                        if(sessionTime_val=='EV'){
+                            // sessionTime_val = 'PM';
+                            offset = 12;
+                        }
+                        if (venue_text1) {
+                            tr_len = await getVenueResultArray(frame, venue_text1);
+                            // console.log("tr_len",tr_len.toString());
+                            for(let index=0; index<tr_len.length; index++){
+                                // console.log("tr_len",index,tr_len[index]);
+                                let time_val = parseInt(sessionTime_text)+index+offset;
+                                // if(time_val>12){
+                                //     time_val -= 12;
+                                // }
+                                if (tr_len[index]=='Y') {
+                                    csvAddRow(data_array);
+                                    csvAddColum(data_array, date_text, day_text, holi_list[i-1], time_val.toString().padStart(2,'0')+':00', venue_text1.replace('體育館', ''));
+                                }
                             }
-                            if (m < num_venue) {
-                                venue_val3 = venue[j][m].toString();
-                                venue_text3 = await getOptionTextByValue(frame, '#preference3\\.venuePanel', venue_val3);
-                                await frame.select('#preference3\\.venuePanel > select', venue_val3);
-                                m++;
+                        }
+                        if (venue_text2) {
+                            tr_len = await getVenueResultArray(frame, venue_text2);
+                            for(let index=0; index<tr_len.length; index++){
+                                let time_val = parseInt(sessionTime_text)+index+offset;
+                                if (tr_len[index]=='Y') {
+                                    csvAddRow(data_array);
+                                    csvAddColum(data_array, date_text, day_text, holi_list[i-1], time_val.toString().padStart(2,'0')+':00', venue_text2.replace('體育館', ''));
+                                }
                             }
-                            // let num_location = await getNumOfOptions(frame,'#preference1\\.locationPanel');
-                            // for(let n=0; n<num_location; n++){
-                            //     let [location_val, location_text] = await getOption(frame,'#preference1\\.locationPanel',n);
-                            //     if(!location_val) continue;
-                            //     await frame.select('#preference1\\.locationPanel > select',location_val);		
-                            {
-                                await pressContinue(frame);
-                                // await new Promise(resolve => setTimeout(resolve, 500))
-                                await frame.waitForSelector("#searchResultTable");
-                                let tr_len;
-                                if(sessionTime_val=='EV'){
-                                    sessionTime_val = 'PM';
+                        }
+                        if (venue_text3) {
+                            tr_len = await getVenueResultArray(frame, venue_text3);
+                            for(let index=0; index<tr_len.length; index++){
+                                let time_val = parseInt(sessionTime_text)+index+offset;
+                                if (tr_len[index]=='Y') {
+                                    csvAddRow(data_array);
+                                    csvAddColum(data_array, date_text, day_text, holi_list[i-1], time_val.toString().padStart(2,'0')+':00', venue_text3.replace('體育館', ''));
                                 }
-                                if (venue_text1) {
-                                    tr_len = await getVenueResultArray(frame, venue_text1);
-                                    console.log("tr_len",tr_len.toString());
-                                    for(let index=0; index<tr_len.length; index++){
-                                        console.log("tr_len",index,tr_len[index]);
-                                        let time_val = parseInt(sessionTime_text)+index;
-                                        if(time_val>12){
-                                            time_val -= 12;
-                                        }
-                                        if (tr_len[index]=='Y') {
-                                            csvAddRow(data_array);
-                                            csvAddColum(data_array, date_text, day_text, time_val, sessionTime_val, venue_text1.replace('體育館', ''));
-                                        }
-                                    }
-                                }
-                                if (venue_text2) {
-                                    tr_len = await getVenueResultArray(frame, venue_text2);
-                                    // console.log("tr_len",tr_len.toString());
-                                    for(let index=0; index<tr_len.length; index++){
-                                        let time_val = parseInt(sessionTime_text)+index;
-                                        if(time_val>12){
-                                            time_val -= 12;
-                                        }
-                                        if (tr_len[index]=='Y') {
-                                            csvAddRow(data_array);
-                                            csvAddColum(data_array, date_text, day_text, time_val, sessionTime_val, venue_text2.replace('體育館', ''));
-                                        }
-                                    }
-                                }
-                                if (venue_text3) {
-                                    tr_len = await getVenueResultArray(frame, venue_text3);
-                                    console.log("tr_len",tr_len.toString());
-                                    for(let index=0; index<tr_len.length; index++){
-                                        let time_val = parseInt(sessionTime_text)+index;
-                                        if(time_val>12){
-                                            time_val -= 12;
-                                        }
-                                        if (tr_len[index]=='Y') {
-                                            csvAddRow(data_array);
-                                            csvAddColum(data_array, date_text, day_text, time_val, sessionTime_val, venue_text3.replace('體育館', ''));
-                                        }
-                                    }
-                                }
-                                // break;
                             }
-                            // break;
                         }
                         // break;
                     }
-                    // break;		
+                    // break;
                 }
                 // break;
             }
@@ -403,38 +395,11 @@ async function csvAddRow(array) {
 
         fs.writeFileSync(path.join(root, 'curr_result1.csv'), csv_data, 'utf8');
 
-
-
-        // let dat_val = await frame.evaluate(() => {
-        //     const example = document.querySelector('#datePanel');
-        //     const example_options = example.querySelectorAll('option');
-        //     let val;
-        //     for(let node of example_options){
-
-        //         val =  node.value
-        //     }
-        //     return val;
-        // });
-        // console.log("val:",dat_val);
-        // await frame.evaluate(() => {
-        //     Array.from(document.querySelector("#datePanel").options).forEach(function(option_element) {
-        //         let option_text = option_element.text;
-        //         let option_value = option_element.value;
-        //         let is_option_selected = option_element.selected;
-
-        //         // console.log('Option Text : ' + option_text);
-        //         // console.log('Option Value : ' + option_value);
-        //         // console.log('Option Selected : ' + (is_option_selected === true ? 'Yes' : 'No'));
-
-        //         // console.log("\n\r");
-        //     });
-        // });
         console.log('end');
 
         // await newPage.close();
         // await page.close();
         await browser.close();
-        // console.log('result:'+captcha);
 
         // Run Python script
         let options = {

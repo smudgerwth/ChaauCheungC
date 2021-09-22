@@ -2,11 +2,15 @@ import requests
 import sys
 import os
 import shutil
+import pandas as pd
 from pathlib import Path
 
 # TOKEN = '1914558215:AAHErOqjdG27dVSL_FLWwJVU7EkV-uC2b4E'
-CHAT_ID = '-590113207'
+CHAT_ID_ALL = '-590113207'
+CHAT_ID_HOLI = '-563254817'
+CHAT_ID_WEEK = '-562433679'
 
+column_name = ["Date","Day","Holiday","Time","Venue"]
 
 def path(fn):
     return(os.path.join(os.path.dirname(os.path.abspath(__file__)), fn))
@@ -14,40 +18,51 @@ def path(fn):
 with open(path('tgToken'), 'r') as f:
     TOKEN = f.read()
 
-def sendTgMsg(msg):
+def sendTgMsg(msg,chat_id):
     requests.post('https://api.telegram.org/bot'+TOKEN +
-                  '/sendMessage?chat_id='+CHAT_ID+'&text='+msg)
+                  '/sendMessage?chat_id='+chat_id+'&text='+msg)
 
+diff = ''
 
-msg = ''
-# msg = sys.argv[1]
-# msg = '佛光街體育館,15/09,22:00,1'
 last_file = Path(path("last_result1.csv"))
+curr_file = Path(path("curr_result1.csv"))
 if last_file.is_file():
     print("last file exists")
-    # with open(path('curr_result.csv'), 'w') as f:
-    # f.write(msg)
 
-    with open(path('last_result1.csv'), 'r') as t1, open(path('curr_result1.csv'), 'r') as t2:
-        fileone = t1.readlines()
-        filetwo = t2.readlines()
+    cur_data = pd.read_csv(path("curr_result1.csv"),names=column_name)
+    last_data = pd.read_csv(path("last_result1.csv"),names=column_name)
 
-    diff = ""
-    for line in filetwo:
-        if line not in fileone:
-            diff = diff+line
-            # sendTgMsg(line)
-    if(diff):
-        sendTgMsg(diff)
+    diff = pd.concat([cur_data,last_data]).drop_duplicates(keep=False)
 
     os.remove(path('last_result1.csv'))
     shutil.copyfile(path('curr_result1.csv'), path('last_result1.csv'))
-    # os.rename(path('curr_result.csv'),path('last_result.csv'))
-else:
+
+elif curr_file.is_file():
     print("no last_result")
     shutil.copyfile(path('curr_result1.csv'), path('last_result1.csv'))
-    # with open(path('last_result1.csv'), 'w') as f:
-    # f.write(msg)
-    with open(path('curr_result1.csv'), 'r') as f:
-        msg = f.read()
-    sendTgMsg(msg)
+
+    diff = pd.read_csv(path("curr_result1.csv"),names=column_name)
+
+else:
+    print("Err: no curr_result")
+    exit(1)
+
+if not diff.empty:
+    # Send all diff
+    msg = diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None)
+    sendTgMsg(msg,CHAT_ID_ALL)
+
+    #Send only holiday
+    selDay = ["六","日"]
+    holi_diff = diff.query('Day in @selDay')
+    if not holi_diff.empty:
+        sendTgMsg(holi_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HOLI)
+    
+    #Send only weekday night
+    selDay = ["一","二","三","四","五"]
+    selTime = ["19:00","20:00","21:00","22:00"]
+    weekD_diff = diff.query('Time in @selTime & Day in @selDay & Holiday=="N"')
+    if not weekD_diff.empty:
+        sendTgMsg(weekD_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_WEEK)
+else:
+    print("no diff")
