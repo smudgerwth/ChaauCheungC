@@ -276,8 +276,8 @@ async function csvAddRow(array) {
         console.log("num_date", num_date);
         for (let i = 0; i < num_date - 1; i++) {     //Skip last date
             let [date_val, date_text] = await getOption(frame, '#datePanel', i);
-            // let day_text= date_text.slice(12,13);
-            date_text = date_text.slice(0, 5) + date_text.slice(11, 14);
+            let day_text= date_text.slice(12,13);
+            date_text = date_text.slice(0, 5);
             // console.log("date_val:",date_val);
             if (!date_val) continue;
             await frame.select('#datePanel > select', date_val);
@@ -295,7 +295,7 @@ async function csvAddRow(array) {
                 for (let k = 0; k < num_sessionTime; k++) {
                     let [sessionTime_val, sessionTime_text] = await getOption(frame, '#sessionTimePanel', k);
                     if (!sessionTime_val) continue;
-                    sessionTime_text = sessionTime_text.slice(5, 7) + sessionTime_val;
+                    sessionTime_text = sessionTime_text.slice(5, 7);
                     await frame.select('#sessionTimePanel > select', sessionTime_val);
 
                     // let num_area = await getNumOfOptions(frame,'#areaPanel');
@@ -339,31 +339,50 @@ async function csvAddRow(array) {
                                 // await new Promise(resolve => setTimeout(resolve, 500))
                                 await frame.waitForSelector("#searchResultTable");
                                 let tr_len;
+                                if(sessionTime_val=='EV'){
+                                    sessionTime_val = 'PM';
+                                }
                                 if (venue_text1) {
                                     tr_len = await getVenueResultArray(frame, venue_text1);
-                                    // console.log("tr_len",tr_len.toString());
-                                    if (tr_len.includes('Y')) {
-                                        csvAddRow(data_array);
-                                        csvAddColum(data_array, date_text, sessionTime_text, venue_text1.replace('體育館', ''));
-                                        csvAddColum(data_array, tr_len);
+                                    console.log("tr_len",tr_len.toString());
+                                    for(let index=0; index<tr_len.length; index++){
+                                        console.log("tr_len",index,tr_len[index]);
+                                        let time_val = parseInt(sessionTime_text)+index;
+                                        if(time_val>12){
+                                            time_val -= 12;
+                                        }
+                                        if (tr_len[index]=='Y') {
+                                            csvAddRow(data_array);
+                                            csvAddColum(data_array, date_text, day_text, time_val, sessionTime_val, venue_text1.replace('體育館', ''));
+                                        }
                                     }
                                 }
                                 if (venue_text2) {
                                     tr_len = await getVenueResultArray(frame, venue_text2);
                                     // console.log("tr_len",tr_len.toString());
-                                    if (tr_len.includes('Y')) {
-                                        csvAddRow(data_array);
-                                        csvAddColum(data_array, date_text, sessionTime_text, venue_text2.replace('體育館', ''));
-                                        csvAddColum(data_array, tr_len);
+                                    for(let index=0; index<tr_len.length; index++){
+                                        let time_val = parseInt(sessionTime_text)+index;
+                                        if(time_val>12){
+                                            time_val -= 12;
+                                        }
+                                        if (tr_len[index]=='Y') {
+                                            csvAddRow(data_array);
+                                            csvAddColum(data_array, date_text, day_text, time_val, sessionTime_val, venue_text2.replace('體育館', ''));
+                                        }
                                     }
                                 }
                                 if (venue_text3) {
                                     tr_len = await getVenueResultArray(frame, venue_text3);
-                                    // console.log("tr_len",tr_len.toString());
-                                    if (tr_len.includes('Y')) {
-                                        csvAddRow(data_array);
-                                        csvAddColum(data_array, date_text, sessionTime_text, venue_text3.replace('體育館', ''));
-                                        csvAddColum(data_array, tr_len);
+                                    console.log("tr_len",tr_len.toString());
+                                    for(let index=0; index<tr_len.length; index++){
+                                        let time_val = parseInt(sessionTime_text)+index;
+                                        if(time_val>12){
+                                            time_val -= 12;
+                                        }
+                                        if (tr_len[index]=='Y') {
+                                            csvAddRow(data_array);
+                                            csvAddColum(data_array, date_text, day_text, time_val, sessionTime_val, venue_text3.replace('體育館', ''));
+                                        }
                                     }
                                 }
                                 // break;
@@ -379,7 +398,7 @@ async function csvAddRow(array) {
             // break;
         }
         // csv_data = "Date,Time,Venue,Location,Slot1,Slot2,Slot3,Slot4,Slot5,Slot6,Slot7\n"
-        csv_data = data_array.map(row => row.join(',')).join('\n');
+        let csv_data = Array.from(new Set(data_array.map(JSON.stringify)), JSON.parse).map(row => row.join(',')).join('\n');
         console.log(csv_data.toString());
 
         fs.writeFileSync(path.join(root, 'curr_result1.csv'), csv_data, 'utf8');
