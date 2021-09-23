@@ -29,10 +29,10 @@ curr_file = Path(path("curr_result1.csv"))
 if last_file.is_file():
     print("last file exists")
 
-    cur_data = pd.read_csv(path("curr_result1.csv"),names=column_name)
-    last_data = pd.read_csv(path("last_result1.csv"),names=column_name)
+    cur_data = pd.read_csv(path("curr_result1.csv"),names=column_name).sort_values('Date')
+    last_data = pd.read_csv(path("last_result1.csv"),names=column_name).sort_values('Date')
 
-    diff = pd.concat([cur_data,last_data]).drop_duplicates(keep=False)
+    diff = pd.concat([cur_data,last_data]).drop_duplicates(keep=False).sort_values('Date')
 
     os.remove(path('last_result1.csv'))
     shutil.copyfile(path('curr_result1.csv'), path('last_result1.csv'))
@@ -41,7 +41,7 @@ elif curr_file.is_file():
     print("no last_result")
     shutil.copyfile(path('curr_result1.csv'), path('last_result1.csv'))
 
-    diff = pd.read_csv(path("curr_result1.csv"),names=column_name)
+    diff = pd.read_csv(path("curr_result1.csv"),names=column_name).sort_values('Date')
 
 else:
     print("Err: no curr_result")
