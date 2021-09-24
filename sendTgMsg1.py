@@ -29,10 +29,11 @@ curr_file = Path(path("curr_result1.csv"))
 if last_file.is_file():
     print("last file exists")
 
-    cur_data = pd.read_csv(path("curr_result1.csv"),names=column_name).sort_values('Date')
-    last_data = pd.read_csv(path("last_result1.csv"),names=column_name).sort_values('Date')
+    cur_data = pd.read_csv(path("curr_result1.csv"),names=column_name)
+    last_data = pd.read_csv(path("last_result1.csv"),names=column_name)
 
-    diff = pd.concat([cur_data,last_data]).drop_duplicates(keep=False).sort_values('Date')
+    diff = pd.merge(cur_data,last_data, how='outer',indicator='Exist').sort_values(['Date','Time'])
+    diff = diff.loc[diff['Exist'] == 'right_only'].drop(['Exist'],axis=1)
 
     os.remove(path('last_result1.csv'))
     shutil.copyfile(path('curr_result1.csv'), path('last_result1.csv'))
@@ -41,7 +42,7 @@ elif curr_file.is_file():
     print("no last_result")
     shutil.copyfile(path('curr_result1.csv'), path('last_result1.csv'))
 
-    diff = pd.read_csv(path("curr_result1.csv"),names=column_name).sort_values('Date')
+    diff = pd.read_csv(path("curr_result1.csv"),names=column_name).sort_values(['Date','Time'])
 
 else:
     print("Err: no curr_result")
@@ -54,7 +55,7 @@ if not diff.empty:
 
     #Send only holiday
     selDay = ["六","日"]
-    holi_diff = diff.query('Day in @selDay')
+    holi_diff = diff.query('Day in @selDay | Holiday=="H"')
     if not holi_diff.empty:
         sendTgMsg(holi_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HOLI)
     
