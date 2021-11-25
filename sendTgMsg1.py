@@ -1,15 +1,20 @@
 import requests
-import sys
+import time
 import os
 import shutil
 import pandas as pd
 from pathlib import Path
 
 # TOKEN = '1914558215:AAHErOqjdG27dVSL_FLWwJVU7EkV-uC2b4E'
-CHAT_ID_ALL = '-590113207'
+CHAT_ID_ALL = '-1001664412034'
 CHAT_ID_HOLI = '-563254817'
 CHAT_ID_WEEK = '-562433679'
+CHAT_ID_HKI = '-760118570'
+CHAT_ID_HKI2 = '-697240120'
+CHAT_ID_NTW = '-682116111'
 CHAT_ID_DEBUG = '166389413'
+
+MSG_DELAY = 0
 
 column_name = ["Date","Day","Holiday","Time","Venue"]
 
@@ -22,6 +27,7 @@ with open(path('tgToken'), 'r') as f:
 def sendTgMsg(msg,chat_id):
     requests.post('https://api.telegram.org/bot'+TOKEN +
                   '/sendMessage?chat_id='+chat_id+'&text='+msg)
+    time.sleep(MSG_DELAY)
 
 msg = ''
 diff = ''
@@ -53,18 +59,16 @@ else:
     exit(1)
 
 if not diff.empty:
-    # Send debug msg
-    msg = last_data.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None)
-    sendTgMsg('LAST:',CHAT_ID_DEBUG)
-    sendTgMsg(msg,CHAT_ID_DEBUG)
-
-    msg = curr_data.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None)
-    sendTgMsg('CURR:',CHAT_ID_DEBUG)
-    sendTgMsg(msg,CHAT_ID_DEBUG)
 
     # Send all diff
     msg = diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None)
     sendTgMsg(msg,CHAT_ID_ALL)
+
+    # Send all NTW
+    selVenue = ["青衣西南","楊屋道","荃灣西約"]
+    NTW_diff = diff.query('Venue in @selVenue')
+    if not NTW_diff.empty:
+        sendTgMsg(NTW_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_NTW)
 
     #Send only holiday
     selDay = ["六","日"]
@@ -78,5 +82,16 @@ if not diff.empty:
     weekD_diff = diff.query('Time in @selTime & Day in @selDay & Holiday=="N"')
     if not weekD_diff.empty:
         sendTgMsg(weekD_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_WEEK)
+
+    #Send only weekday night, lunch 港灣道
+    selVenue = ["港灣道"]
+    selTime = ["13:00","19:00","20:00","21:00","22:00"]
+    weekD_diff_HK = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Venue in @selVenue')
+    if not weekD_diff_HK.empty:
+        sendTgMsg(weekD_diff_HK.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI)    
+        sendTgMsg(weekD_diff_HK.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI2)
 else:
     print("no diff")
+
+# Send debug msg
+sendTgMsg('ping',CHAT_ID_DEBUG)
