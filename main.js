@@ -10,19 +10,29 @@ const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
 const btn_index = 5; // 0:booking, 5:checking
 const badminton_val = '7';
 
-const facilityType = [22, 504];
-const area = ["*NTE", "*KLN"];
+const facilityType = [22, 22, 504, 504];
+const area = ["*NTE", "*NTW", "*KLN", "*HK"];
 const venue = [
+    //"*NTE"
     [
         60, 61, 94,
         70000734, 70001033, 70001333
     ],
+    //"*NTW"
+    [
+        95, 70001733, 70001535
+    ],
+    //"*KLN"
     [
         279, 281, 284,
         287, 288, 291,
         292, 293, 244,
         245, 246, 248,
         254, 256, 257
+    ],
+    //"*HK"
+    [
+        300, 302, 303
     ]
 ];
 let py_sh = path.join(root, 'sendTgMsg1.py');
