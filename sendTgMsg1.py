@@ -85,11 +85,14 @@ if not diff.empty:
 
     #Send only weekday night, lunch 港灣道
     selVenue = ["港灣道"]
-    selTime = ["13:00","19:00","20:00","21:00","22:00"]
+    selVenue2 = ["港灣道","小西灣","柴灣"]
+    selTime = ["07:00","13:00","19:00","20:00","21:00","22:00"]
     weekD_diff_HK = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Venue in @selVenue')
+    weekD_diff_HK2 = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Venue in @selVenue2')
     if not weekD_diff_HK.empty:
         sendTgMsg(weekD_diff_HK.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI)    
-        sendTgMsg(weekD_diff_HK.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI2)
+    if not weekD_diff_HK2.empty:
+        sendTgMsg(weekD_diff_HK2.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI2)
 else:
     print("no diff")
 

@@ -32,7 +32,7 @@ const venue = [
     ],
     //"*HK"
     [
-        300, 302, 303
+        300, 212, 70000727
     ]
 ];
 let py_sh = path.join(root, 'sendTgMsg1.py');
@@ -201,7 +201,7 @@ async function csvAddRow(array) {
             // '--single-process',
             // '--incognito',
         ],
-        slowMo: 150, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 120, // slow down puppeteer script so that it's easier to follow visually
     });
     try {
         let [page] = await browser.pages();
@@ -295,13 +295,16 @@ async function csvAddRow(array) {
         // console.log(holi_list[0]);
 
         let num_date = await getNumOfOptions(frame, '#datePanel');
-        console.log("num_date", num_date);
+        console.log("num_date:" + num_date);
         for (let i = 0; i < num_date - 1; i++) {     //Skip last date
             let [date_val, date_text] = await getOption(frame, '#datePanel', i);
             let day_text= date_text.slice(12,13);
             date_text = date_text.slice(0, 5);
             // console.log("date_val:",date_val);
             if (!date_val) continue;
+            console.log('day:' + i);
+            console.log(new Date().toString());
+
             await frame.select('#datePanel > select', date_val);
 
             // let num_facilityType = await getNumOfOptions(frame,'#facilityTypePanel');
@@ -401,7 +404,7 @@ async function csvAddRow(array) {
         }
         // csv_data = "Date,Time,Venue,Location,Slot1,Slot2,Slot3,Slot4,Slot5,Slot6,Slot7\n"
         let csv_data = Array.from(new Set(data_array.map(JSON.stringify)), JSON.parse).map(row => row.join(',')).join('\n');
-        console.log(csv_data.toString());
+        // console.log(csv_data.toString());
 
         fs.writeFileSync(path.join(root, 'curr_result1.csv'), csv_data, 'utf8');
 
@@ -424,7 +427,7 @@ async function csvAddRow(array) {
                 if (err) reject(err);
                 // result is an array consisting of messages collected 
                 //during execution of script.
-                console.log('result: ', result);
+                console.log('result:' + result);
                 resolve();
             });
         });
