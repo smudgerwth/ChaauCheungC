@@ -1,5 +1,5 @@
-numpy==1.21.1
+numpy==1.19.5
 opencv-python==4.5.3.56
-Pillow==9.0.1
+Pillow==8.4.0
 pytesseract==0.3.8
 tesseract==0.1.3

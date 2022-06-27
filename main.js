@@ -25,7 +25,7 @@ const venue = [
     //"*KLN"
     [
         //279, 281, 284,
-        287, 288, 291,
+        287, 70000521, 291,
         292, 293, 244,
         245, 256, 257
         //254, 256, 257
@@ -199,9 +199,9 @@ async function csvAddRow(array) {
             '--disable-setuid-sandbox',
             // '--disable-dev-shm-usage',
             // '--single-process',
-            // '--incognito',
+             '--incognito',
         ],
-        slowMo: 120, // slow down puppeteer script so that it's easier to follow visually
+        slowMo: 150, // slow down puppeteer script so that it's easier to follow visually
     });
     try {
         let [page] = await browser.pages();
@@ -291,8 +291,8 @@ async function csvAddRow(array) {
             }
             return array;
         });
-        // console.log(holi_list);
-        // console.log(holi_list[0]);
+        //console.log(holi_list);
+        //console.log(holi_list[0]);
 
         let num_date = await getNumOfOptions(frame, '#datePanel');
         console.log("num_date:" + num_date);
@@ -300,11 +300,13 @@ async function csvAddRow(array) {
             let [date_val, date_text] = await getOption(frame, '#datePanel', i);
             let day_text= date_text.slice(12,13);
             date_text = date_text.slice(0, 5);
-            // console.log("date_val:",date_val);
+            console.log("date_val:",date_val);
             if (!date_val) continue;
-            console.log('day:' + i);
+	    console.log('day:' + i);
             console.log(new Date().toString());
-
+            console.log('date_text:'+day_text);
+	    if(holi_list[i-1]=='N'&&day_text!='六') continue;
+	    
             await frame.select('#datePanel > select', date_val);
 
             // let num_facilityType = await getNumOfOptions(frame,'#facilityTypePanel');
@@ -433,8 +435,9 @@ async function csvAddRow(array) {
         });
     } catch (error) {
         console.log(error);
-        await browser.close();
-        process.exitcode = 1;
+	console.log("ERROR!!!!!!");
+	await browser.close();
+        process.exit(1);
     }
     console.log(new Date().toString());
 })();
