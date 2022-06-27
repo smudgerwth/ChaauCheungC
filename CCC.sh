@@ -8,12 +8,13 @@ while true; do
 	node main.js 2>&1 | tee log
     fi
     ret=${PIPESTATUS[0]}
-    echo $ret > ret
-    if [ $ret -eq 0 ]; then
-	sleep $(cat delay)
-    	retry=0
-    else
-	sleep $((60*$retry))
-    fi
+    # echo $ret > ret
+    # if [ $ret -eq 0 ]; then
+	    sleep $(cat delay)
+    # 	retry=0
+    # else
+	#     sleep $((60*$retry))
+    # 	retry+=1
+    # fi
 done
 
