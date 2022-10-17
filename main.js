@@ -26,7 +26,7 @@ const venue = [
     // ],
     //"*KLN"
     [
-        279, 281, 284,
+        279, 70002234, 284,
         287, 70002133, 291,
         292, 293, 244,
         245, 256, 257,
@@ -133,6 +133,20 @@ async function pressContinue(c_page) {
     });
 }
 
+async function slideContinue(c_page) {
+    let elm = await (await c_page.waitForSelector("#continueId", { visible: true }));
+    let bounding_box = await elm.boundingBox();
+    let x = bounding_box.x + bounding_box.width / 4;
+    let y = bounding_box.y + bounding_box.height / 2;
+    await c_page.mouse.move(x, y);
+    await c_page.mouse.down();
+    await c_page.waitForTimeout(50);
+    await c_page.mouse.move(x + 150, y, { steps: 10 });
+    await c_page.waitForTimeout(50);
+    await c_page.mouse.up();
+    await c_page.waitForTimeout(50);
+}
+
 async function getNumOfOptions(page, id) {
     return await page.evaluate(async (id) => {
         let node = document.querySelector(id);
@@ -234,7 +248,7 @@ async function csvAddRow(array) {
                     return a.lastIndexOf(v) != i;
                 }) == false) {
                 await selectCaptchaKeys(newPage, ocr_captcha);
-                await pressContinue(newPage);
+                await slideContinue(newPage);
                 elementHandle = await newPage.waitForSelector("frame[name='main']", { timeout: 5000 }).catch(error => console.log('failed to wait for the selector'));
                 if (elementHandle != null)
                     break;
@@ -324,7 +338,7 @@ async function csvAddRow(array) {
                 for (let k = 0; k < num_sessionTime; k++) {
                     let [sessionTime_val, sessionTime_text] = await getOption(frame, '#sessionTimePanel', k);
                     if (!sessionTime_val) continue;
-                    if (holi_list[i - 1] == 'N' && day_text != '六' && k<(num_sessionTime-1)) continue;
+                    if (holi_list[i - 1] == 'N' && day_text != '六' && k < (num_sessionTime - 1)) continue;
 
                     sessionTime_text = sessionTime_text.slice(5, 7);
                     await frame.select('#sessionTimePanel > select', sessionTime_val);
