@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 
 # TOKEN = '1914558215:AAHErOqjdG27dVSL_FLWwJVU7EkV-uC2b4E'
-CHAT_ID = '-682116111'
+CHAT_ID = '166389413'
 
 
 def path(fn):
@@ -15,6 +15,8 @@ with open(path('tgToken'), 'r') as f:
     TOKEN = f.read()
 
 def sendTgMsg(msg):
+    print('https://api.telegram.org/bot'+TOKEN+
+                  '/sendMessage?chat_id='+CHAT_ID+'&text='+msg)
     requests.post('https://api.telegram.org/bot'+TOKEN +
                   '/sendMessage?chat_id='+CHAT_ID+'&text='+msg)
 

@@ -53,6 +53,7 @@ puppeteer.use(StealthPlugin());
 async function solveCaptcha(c_page) {
     // Wait for captcha image
     await c_page.waitForSelector('#inputTextWrapper');
+    // await c_page.waitForSelector('#inputTextWrapper > div > img');
     // c_page.on('console', consoleObj => console.log(consoleObj.text()));
     console.log('7');
 
@@ -148,6 +149,7 @@ async function slideContinue(c_page) {
 }
 
 async function getNumOfOptions(page, id) {
+    await page.waitForSelector(id);
     return await page.evaluate(async (id) => {
         let node = document.querySelector(id);
         let node_options = node.querySelectorAll('option');
@@ -156,6 +158,7 @@ async function getNumOfOptions(page, id) {
 }
 
 async function getOption(page, id, index) {
+    await page.waitForSelector(id);
     return await page.evaluate(async (id, index) => {
         let node = document.querySelector(id);
         let node_options = node.querySelectorAll('option');
@@ -164,6 +167,7 @@ async function getOption(page, id, index) {
 }
 
 async function getOptionTextByValue(page, id, value) {
+    await page.waitForSelector(id);
     return await page.evaluate(async (id, value) => {
         let node = document.querySelector(id);
         let node_options = node.querySelector('option[value="' + value + '"]');
@@ -227,6 +231,7 @@ async function csvAddRow(array) {
         // console.log('2');
         // await page.waitForNavigation({waitUntil: 'networkidle0'});
         // console.log('3');
+        // while(1);
 
         // Click to enter captcha page
         let btns = await page.$$('.actionBtnBlock');
@@ -295,10 +300,10 @@ async function csvAddRow(array) {
             }
         }
         let data_array = [];
-        await frame.waitForSelector("#datePanel");
-
+        await frame.waitForSelector("#facilityPanel > select");        
         await frame.select('#facilityPanel > select', badminton_val);
 
+        await frame.waitForSelector("#datePickerFacilityResponsive > table");
         let holi_list = await frame.evaluate(async () => {
             let nodes = document.querySelectorAll('#datePickerFacilityResponsive table input[type="button"]');
             let array = [];
@@ -372,7 +377,7 @@ async function csvAddRow(array) {
 
                         await pressContinue(frame);
                         // await new Promise(resolve => setTimeout(resolve, 500))
-                        await frame.waitForSelector("#searchResultTable");
+                        await frame.waitForSelector("#searchResultTable > table");
                         let tr_len;
                         let offset = 0;
                         if (sessionTime_val == 'EV') {
