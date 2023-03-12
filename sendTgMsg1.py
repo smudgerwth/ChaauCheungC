@@ -11,12 +11,12 @@ CHAT_ID_HOLI = '-563254817'
 CHAT_ID_WEEK = '-562433679'
 CHAT_ID_HKI = '-760118570'
 CHAT_ID_HKI2 = '-697240120'
-CHAT_ID_NTW = '-682116111'
+CHAT_ID_NTW = '-1001896497593'
 CHAT_ID_DEBUG = '166389413'
 
 MSG_DELAY = 0
 
-column_name = ["Date","Day","Holiday","Time","Venue"]
+column_name = ["Date","Day","Holiday","Time","Venue","Area"]
 
 def path(fn):
     return(os.path.join(os.path.dirname(os.path.abspath(__file__)), fn))
@@ -61,39 +61,38 @@ else:
 if not diff.empty:
 
     # Send all diff
-    msg = diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None)
+    msg = diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None)
     sendTgMsg(msg,CHAT_ID_ALL)
 
     # Send all NTW
-    selVenue = ["青衣西南","楊屋道","荃灣西約"]
-    NTW_diff = diff.query('Venue in @selVenue')
+    NTW_diff = diff.query('Area == "*NTW"')
     if not NTW_diff.empty:
-        sendTgMsg(NTW_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_NTW)
+        sendTgMsg(NTW_diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_NTW)
 
     #Send only holiday
     selDay = ["六","日"]
-    holi_diff = diff.query('Day in @selDay | Holiday=="H"')
+    holi_diff = diff.query('(Day in @selDay | Holiday=="H") & Area != "*NTW"')
     if not holi_diff.empty:
-        sendTgMsg(holi_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HOLI)
+        sendTgMsg(holi_diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HOLI)
     
     #Send only weekday night
     selDay = ["一","二","三","四","五"]
     selTime = ["19:00","20:00","21:00","22:00"]
-    weekD_diff = diff.query('Time in @selTime & Day in @selDay & Holiday=="N"')
+    weekD_diff = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Area != "*NTW"')
     if not weekD_diff.empty:
-        sendTgMsg(weekD_diff.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_WEEK)
+        sendTgMsg(weekD_diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_WEEK)
 
     #Send only weekday night, lunch 港灣道
-    selVenue = ["港灣道"]
-    selVenue2 = ["港灣道","小西灣","柴灣"]
-    selTime = ["18:00","19:00","20:00","21:00","22:00"]
-    selTime2 = ["07:00","13:00","18:00","19:00","20:00","21:00","22:00"]
-    weekD_diff_HK = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Venue in @selVenue')
-    weekD_diff_HK2 = diff.query('Time in @selTime2 & Day in @selDay & Holiday=="N" & Venue in @selVenue2')
-    if not weekD_diff_HK.empty:
-        sendTgMsg(weekD_diff_HK.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI)    
-    if not weekD_diff_HK2.empty:
-        sendTgMsg(weekD_diff_HK2.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI2)
+    # selVenue = ["港灣道"]
+    # selVenue2 = ["港灣道","小西灣","柴灣"]
+    # selTime = ["18:00","19:00","20:00","21:00","22:00"]
+    # selTime2 = ["07:00","13:00","18:00","19:00","20:00","21:00","22:00"]
+    # weekD_diff_HK = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Venue in @selVenue')
+    # weekD_diff_HK2 = diff.query('Time in @selTime2 & Day in @selDay & Holiday=="N" & Venue in @selVenue2')
+    # if not weekD_diff_HK.empty:
+    #     sendTgMsg(weekD_diff_HK.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI)    
+    # if not weekD_diff_HK2.empty:
+    #     sendTgMsg(weekD_diff_HK2.drop(["Holiday"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI2)
 else:
     print("no diff")
 

@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 
 # TOKEN = '1914558215:AAHErOqjdG27dVSL_FLWwJVU7EkV-uC2b4E'
-CHAT_ID = '166389413'
+CHAT_ID = '-1001896497593'
 
 
 def path(fn):

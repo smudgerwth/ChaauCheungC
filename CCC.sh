@@ -5,7 +5,7 @@ while true; do
     #echo $HOUR
     if [ $HOUR -ge 7 ]; then
 	#node /root/Projects/ChaauCheungC/checkcheung.js > /root/Projects/ChaauCheungC/log 2>&1
-	node main.js 2>&1 | tee log
+	time node main.js 2>&1 | tee log
     fi
     ret=${PIPESTATUS[0]}
     # echo $ret > ret
