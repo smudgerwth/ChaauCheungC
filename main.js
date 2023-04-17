@@ -10,43 +10,42 @@ const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
 const btn_index = 5; // 0:booking, 5:checking
 const badminton_val = '7';
 
-// const facilityType = [22, 22, 504, 504];
-const facilityType = [22, 22, 504];
-// const area = ["*NTE", "*NTW", "*KLN", "*HK"];
-const area = ["*NTE", "*NTW", "*KLN"];
+const facilityType = [22, 22, 504, 504];
+// const facilityType = [22, 22, 504];
+const area = ["*NTE", "*NTW", "*KLN", "*HK"];
+// const area = ["*NTE", "*NTW", "*KLN"];
 const venue = [
     //"*NTE"
     [
-        56, 61, 94,
-        69, 57, 67,
+        56, 57, 61,
+        67, 69, 94,
         70000734, 70001033, 70001333
     ],
     //"*NTW"
     [
-        70000623, 23, 35,
-        36, 37, 38,
-        40, 66, 70001535,
-        25, 26, 72,
-        73, 70001833, 42,
-        43, 95, 96,
-        // 70001733, 76, 77,
-        96, 76, 77,
-        87, 70000525, 70000831,
-        // 70000931, 70001534,
-        70000931, 70001534, 70000831
+        23, 25, 26,
+        35, 36, 37,
+        38, 40, 42,
+        43, 66, 72,
+        73, 76, 77,
+        87, 95, 96,
+        70000525, 70000623, 70000831,
+        70000931, 70001534, 70001535,
+        70001833 //,70001733
     ],
     //"*KLN"
     [
-        279, 70002234, 284,
-        287, 70002133, 291,
-        292, 293, 244,
-        245, 256, 257,
-        254, 288, 246
+        244, 245, 246,
+        256, 257, 279,
+        284, 287, 288,
+        291, 292, 293,
+        70002133, 70002234
     ],
     //"*HK"
-    // [
-    //     300, 212, 70000727
-    // ]
+    [
+        300, 212, 213,
+        217
+    ]
 ];
 let py_sh = path.join(root, 'sendTgMsg1.py');
 
@@ -242,13 +241,11 @@ async function csvAddRow(array) {
         // console.log('2');
         // await page.waitForNavigation({waitUntil: 'networkidle0'});
         // console.log('3');
-        // while(1);
 
         // Click to enter captcha page
-        let btns = await page.$$('.actionBtnBlock');
+        await page.click('#LCSD_4');
         // console.log('4');
         let newPagePromise = new Promise(x => page.once('popup', x));
-        await btns[btn_index].click();
         // console.log('5');
 
         let newPage = await newPagePromise;
@@ -260,12 +257,12 @@ async function csvAddRow(array) {
             ocr_captcha = await solveCaptcha(newPage);
             console.log("ocr_captcha:" + ocr_captcha);
             if (ocr_captcha.length == 4
-                && ocr_captcha.split("").some(function (v, i, a) {
-                    return a.lastIndexOf(v) != i;
+                && ocr_captcha.split("").some(function (v, i, a) {      //string to char array
+                    return a.lastIndexOf(v) != i;                       //check no duplicate
                 }) == false) {
                 await selectCaptchaKeys(newPage, ocr_captcha);
-                await newPage.evaluate(()=>{
-                    window.scrollBy(0,400);
+                await newPage.evaluate(() => {
+                    window.scrollBy(0, 400);
                 });
                 await slideContinue(newPage);
                 elementHandle = await newPage.waitForSelector("frame[name='main']", { timeout: 5000 }).catch(error => console.log('failed to wait for the selector'));
@@ -339,7 +336,8 @@ async function csvAddRow(array) {
             if (!date_val) continue;
             console.log('day:' + i);
             console.log(new Date().toString());
-            console.log('date_text:' + day_text);
+            console.log('date_text:' + date_text);
+            console.log('day_text:' + day_text);
             // if (holi_list[i - 1] == 'N' && day_text != '六') continue;
 
             await frame.select('#datePanel > select', date_val);
@@ -349,8 +347,8 @@ async function csvAddRow(array) {
             for (let j = 0; j < num_facilityType; j++) { //use for each?
                 // let [facilityType_val, facilityType_text] = await getOption(frame,'#facilityTypePanel',j);
                 // if(!facilityType_val) continue;
-                facilityType_val = facilityType[j].toString();
-                facilityType_text = await getOptionTextByValue(frame, '#facilityTypePanel', facilityType_val);
+                let facilityType_val = facilityType[j].toString();
+                // let facilityType_text = await getOptionTextByValue(frame, '#facilityTypePanel', facilityType_val);
                 await frame.select('#facilityTypePanel > select', facilityType_val);
 
                 let num_sessionTime = await getNumOfOptions(frame, '#sessionTimePanel');
@@ -390,7 +388,7 @@ async function csvAddRow(array) {
                         }
 
                         await pressContinue(frame);
-                        await new Promise(resolve => setTimeout(resolve, 100))
+                        // await new Promise(resolve => setTimeout(resolve, 100))
                         await page.waitForFunction(() => {
                             return document.readyState == 'complete';
                         })
@@ -403,7 +401,7 @@ async function csvAddRow(array) {
                         }
                         if (venue_text1) {
                             tr_len = await getVenueResultArray(frame, venue_text1);
-                            while (tr_len == null) {
+                            for (let retry = 0; retry < 100, tr_len == null; retry++) {
                                 await new Promise(resolve => setTimeout(resolve, 100))
                                 tr_len = await getVenueResultArray(frame, venue_text1);
                             }
@@ -422,7 +420,7 @@ async function csvAddRow(array) {
                         }
                         if (venue_text2) {
                             tr_len = await getVenueResultArray(frame, venue_text2);
-                            while (tr_len == null) {
+                            for (let retry = 0; retry < 100, tr_len == null; retry++) {
                                 await new Promise(resolve => setTimeout(resolve, 100))
                                 tr_len = await getVenueResultArray(frame, venue_text2);
                             }
@@ -436,7 +434,7 @@ async function csvAddRow(array) {
                         }
                         if (venue_text3) {
                             tr_len = await getVenueResultArray(frame, venue_text3);
-                            while (tr_len == null) {
+                            for (let retry = 0; retry < 100, tr_len == null; retry++) {
                                 await new Promise(resolve => setTimeout(resolve, 100))
                                 tr_len = await getVenueResultArray(frame, venue_text3);
                             }

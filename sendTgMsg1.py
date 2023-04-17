@@ -71,14 +71,20 @@ if not diff.empty:
 
     #Send only holiday
     selDay = ["六","日"]
-    holi_diff = diff.query('(Day in @selDay | Holiday=="H") & Area != "*NTW"')
+    holi_diff = diff.query('(Day in @selDay | Holiday=="H") & Area != "*NTW" & Area != "*HK"')
     if not holi_diff.empty:
         sendTgMsg(holi_diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HOLI)
+    
+    #Send only holiday HK
+    selDay = ["六","日"]
+    hk_holi_diff = diff.query('(Day in @selDay | Holiday=="H") & Area == "*HK"')
+    if not hk_holi_diff.empty:
+        sendTgMsg(hk_holi_diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_HKI2)
     
     #Send only weekday night
     selDay = ["一","二","三","四","五"]
     selTime = ["19:00","20:00","21:00","22:00"]
-    weekD_diff = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Area != "*NTW"')
+    weekD_diff = diff.query('Time in @selTime & Day in @selDay & Holiday=="N" & Area != "*NTW" & Area != "*HK"')
     if not weekD_diff.empty:
         sendTgMsg(weekD_diff.drop(["Holiday","Area"],axis=1).to_csv(sep = ',', index = False, header = None),CHAT_ID_WEEK)
 
