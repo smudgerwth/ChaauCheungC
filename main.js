@@ -245,10 +245,14 @@ async function csvAddRow(array) {
         // Click to enter captcha page
         await page.click('#LCSD_4');
         // console.log('4');
-        let newPagePromise = new Promise(x => page.once('popup', x));
+        //let newPagePromise = new Promise(x => page.once('popup', x));
+        let newPagePromise = await browser.waitForTarget(target => target.opener() === page.target());
+
         // console.log('5');
 
-        let newPage = await newPagePromise;
+        //let newPage = await newPagePromise;
+        let newPage = await newPagePromise.page();
+
         // console.log('6');
         let ocr_captcha;
         let elementHandle;
