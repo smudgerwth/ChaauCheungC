@@ -39,6 +39,7 @@ async function getVenueList(filePath) {
         
         groupedArray.forEach(group => {
             console.log(`Facility Type: ${group.facilityType}, Area: ${group.area}`);
+            console.log(`Venue0: ${group.list[1].venue}, Name0: ${group.list[1].name}`);
             group.list.forEach(item => {
                 console.log(`Venue: ${item.venue}, Name: ${item.name}`);
             });
