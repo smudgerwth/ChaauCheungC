@@ -1,3 +1,4 @@
+const { PythonShell } = require('python-shell');
 async function solveCaptcha(c_page) {
     // Wait for captcha image
     await c_page.waitForSelector('#inputTextWrapper');

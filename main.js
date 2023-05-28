@@ -6,7 +6,6 @@ const { PythonShell } = require('python-shell');
 const path = require('path');
 const root = path.dirname(require.main.filename);
 const ppUserPrefs = require('puppeteer-extra-plugin-user-preferences');
-const fs = require('fs');
 const csv = require('csv-parser');
 
 const captcha = require('./captcha.js');
@@ -307,9 +306,10 @@ async function csvAddRow(array) {
 
             let groupedArray = await getVenueList('venues.csv');
         
-            groupedArray.forEach(async group => {
+	    for (let j = 0; j < groupedArray.length; j++) {
+
+   		let group = groupedArray[j];
                 console.log(`Facility Type: ${group.facilityType}, Area: ${group.area}`);
-   
                 let facilityType_val = group.facilityType.toString();
                 // let facilityType_text = await getOptionTextByValue(frame, '#facilityTypePanel', facilityType_val);
                 await frame.select('#facilityTypePanel > select', facilityType_val);
@@ -324,10 +324,12 @@ async function csvAddRow(array) {
                     await frame.select('#sessionTimePanel > select', sessionTime_val);
 
                     let area_val = group.area;
+		    console.log("area_val:",area_val)
                     await frame.select('#areaPanel > select', area_val);
                     // let num_venue = await getNumOfOptions(frame,'#preference1\\.venuePanel');
-                    let num_venue = venue[j].length;
-                    for (let m = 0; m < group.list.length;) {
+                    let num_venue = group.list.length;
+		    console.log("num_venue:",num_venue)
+                    for (let m = 0; m < num_venue;) {
                         // let [venue_val, venue_text] = await getOption(frame,'#preference1\\.venuePanel',m);
                         // if(!venue_val) continue;
                         let venue_text1, venue_text2, venue_text3;
@@ -410,7 +412,7 @@ async function csvAddRow(array) {
                         }
                     }
                 }
-            });
+            }
 
 /*
             // let num_facilityType = await getNumOfOptions(frame,'#facilityTypePanel');
